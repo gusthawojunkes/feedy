@@ -10,6 +10,21 @@ const router = createRouter({
             component: HomeView,
         },
         {
+            path: '/produtos',
+            name: 'produtos',
+            component: () => import('@/views/configuration/ProductsConfiguration.vue'),
+        },
+        {
+            path: '/pedido-aberto',
+            name: 'order',
+            component: () => import('@/views/OrderView.vue'),
+        },
+        {
+            path: '/pedidos-criados',
+            name: 'orders',
+            component: () => import('@/views/OrdersView.vue'),
+        },
+        {
             path: '/cardapio',
             name: 'cardapio',
             component: () => import('@/components/menu/ProductList.vue'),
