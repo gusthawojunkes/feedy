@@ -1,13 +1,16 @@
 <template>
     <v-row>
         <v-col cols="12">
-            <v-btn> Novo <v-icon>mdi-plus</v-icon></v-btn>
-            <ProductRegisterModal :open="createProductDialog" @close="createProductDialog = false"> </ProductRegisterModal>
+            <v-btn @click="create()">
+                <span>Novo</span>
+                <v-icon>mdi-plus</v-icon>
+            </v-btn>
+            <ProductRegisterModal :open="createProductDialog" @close="createProductDialog = false" @on-create="reloadProducts($event)"> </ProductRegisterModal>
         </v-col>
     </v-row>
     <v-row v-if="products.length > 0">
         <v-col cols="12" lg="3" v-for="product in products" :key="product.name">
-            <ProductCard :product="product"></ProductCard>
+            <ProductCard :product="product" @remove="remove($event)"></ProductCard>
         </v-col>
     </v-row>
     <v-row v-else>
@@ -27,33 +30,31 @@ export default defineComponent({
         ProductRegisterModal,
     },
     async mounted() {
-        ProductService.getAll()
-            .then((products) => {
-                this.products = products;
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        this.products = await ProductService.getAll();
     },
     data: () => ({
         products: [],
         createProductDialog: false,
     }),
     methods: {
-        // remove(uid) {
-        //     ProductService.remove(uid).then(() => {
-        //         this.products = this.products.filter((product) => product.uid !== uid);
-        //     });
-        // },
-        // edit(uid) {
-        //     console.log(uid);
-        // },
-        // toBrazilianCurrency(value) {
-        //     return StringUtils.convertIntoCurrency(value);
-        // },
-        // create() {
-        //     this.createProductDialog = true;
-        // },
+        remove(uid) {
+            ProductService.remove(uid).then(() => {
+                this.products = this.products.filter((product) => product.uid !== uid);
+            });
+        },
+        edit(uid) {
+            console.log(uid);
+        },
+        create() {
+            this.createProductDialog = true;
+            console.log(this.createProductDialog);
+        },
+        reloadProducts(newProduct) {
+            if (newProduct) {
+                this.products.push(newProduct);
+                this.createProductDialog = false;
+            }
+        },
     },
 });
 </script>

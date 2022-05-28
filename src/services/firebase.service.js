@@ -1,4 +1,4 @@
-import { getFirestore, collection, doc, addDoc, deleteDoc, getDocs, updateDoc, getDoc } from 'firebase/firestore';
+import { getFirestore, collection, doc, setDoc, deleteDoc, getDocs, updateDoc, getDoc } from 'firebase/firestore';
 import Helper from '@/utils/helper';
 import Logger from '@/utils/logger';
 
@@ -41,12 +41,15 @@ export default class BaseService {
     }
 
     static save(collectionName, data) {
+        if (!data || !data.uid) {
+            throw 'Invalid data, please verify the data object';
+        }
         const database = this.getInstance();
-        const collection = this.getCollection(database, collectionName);
+        const document = this.getDocumentReference(database, collectionName, data.uid);
         return new Promise((resolve, reject) => {
             try {
-                addDoc(collection, data).then(() => {
-                    Logger.warning(`Added document '${data.uid}' to collection '${collectionName}'`);
+                setDoc(document, data).then(() => {
+                    Logger.info(`Added document '${data.uid}' to collection '${collectionName}'`);
                     resolve();
                 });
             } catch (error) {
@@ -93,9 +96,9 @@ export default class BaseService {
         const database = this.getInstance();
         return new Promise((resolve, reject) => {
             try {
-                const document = doc(database, collectionName, uid);
+                const document = this.getDocumentReference(database, collectionName, uid);
                 deleteDoc(document).then(() => {
-                    Logger.warning(`Removed document '${uid}' from collection '${collectionName}'`);
+                    Logger.info(`Removed document '${uid}' from collection '${collectionName}'`);
                     resolve();
                 });
             } catch (error) {

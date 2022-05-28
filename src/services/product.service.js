@@ -1,14 +1,13 @@
 import BaseService from './firebase.service';
-import _ from 'lodash';
 
-const ProductService = _.extend(BaseService, {
-    constructor() {
-        this.COLLECTION = 'products';
-    },
-
-    getAll: async () => {
-        return await BaseService.getAll(this.COLLECTION);
-    },
-});
-
-export default ProductService;
+export default class ProductService {
+    static async getAll() {
+        return await BaseService.getAll('products');
+    }
+    static async remove(uid) {
+        return await BaseService.remove('products', uid);
+    }
+    static save(data) {
+        return BaseService.save('products', data);
+    }
+}

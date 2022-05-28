@@ -37,11 +37,4 @@ export default class Firebase {
             }
         });
     }
-
-    static getInstance() {
-        if (Firebase.INSTANCE == null) {
-            throw new Error('Firebase instance not initialized');
-        }
-        return Firebase.INSTANCE;
-    }
 }

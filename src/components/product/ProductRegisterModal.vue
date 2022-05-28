@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="opened">
+    <v-dialog v-model="open">
         <v-card>
             <v-card-title>
                 <span>Cadastrar produto</span>
@@ -34,12 +34,13 @@
 
 <script>
 import { defineComponent } from 'vue';
+import ProductService from '@/services/product.service';
+import Helper from '@/utils/helper';
 
 export default defineComponent({
     name: 'ProductRegisterModal',
     data: () => ({
         newProduct: {},
-        opened: false,
     }),
     props: {
         open: { type: Boolean, default: false },
@@ -49,9 +50,17 @@ export default defineComponent({
             this.$emit('close');
         },
         register() {
-            console.log(this.$refs.productFormulary);
+            const formularyIsValid = this.$refs.productFormulary.validate();
+            if (formularyIsValid) {
+                this.newProduct.uid = Helper.generateUid();
+                this.newProduct.createdAt = new Date();
+                this.newProduct.updatedAt = new Date();
 
-            console.log(this.newProduct);
+                ProductService.save(this.newProduct).then(() => {
+                    this.$emit('on-create', this.newProduct);
+                    this.newProduct = {};
+                });
+            }
         },
     },
 });

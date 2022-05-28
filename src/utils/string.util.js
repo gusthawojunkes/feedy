@@ -5,4 +5,10 @@ export default class StringUtils {
     static isNotBlank(value) {
         return !StringUtils.isBlank(value);
     }
+    static convertIntoCurrency(value) {
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+        }).format(value);
+    }
 }
