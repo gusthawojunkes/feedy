@@ -18,6 +18,7 @@
 <script>
 import { defineComponent } from 'vue';
 import ProductCard from '@/components/product/ProductCard.vue';
+import ProductService from '../../services/product.service';
 import ProductRegisterModal from '@/components/product/ProductRegisterModal.vue';
 export default defineComponent({
     name: 'ProductsConfiguration',
@@ -25,15 +26,15 @@ export default defineComponent({
         ProductCard,
         ProductRegisterModal,
     },
-    // async mounted() {
-    //     ProductService.getAll()
-    //         .then((products) => {
-    //             this.products = products;
-    //         })
-    //         .catch((error) => {
-    //             console.log(error);
-    //         });
-    // },
+    async mounted() {
+        ProductService.getAll()
+            .then((products) => {
+                this.products = products;
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    },
     data: () => ({
         products: [],
         createProductDialog: false,
