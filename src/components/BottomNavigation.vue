@@ -1,7 +1,7 @@
 <template>
     <v-bottom-navigation :value="value" color="primary">
-        <v-btn to="/">
-            <v-icon>mdi-home</v-icon>
+        <v-btn v-for="path in paths" :key="path" :to="path.path">
+            <v-icon>{{ path.icon }}</v-icon>
         </v-btn>
     </v-bottom-navigation>
 </template>
@@ -17,22 +17,17 @@ export default defineComponent({
             {
                 name: 'Home',
                 path: '/',
+                icon: 'mdi-home',
             },
             {
                 name: 'Produtos',
-                path: '/produtos',
+                path: '/pedido-aberto',
+                icon: 'mdi-pencil',
             },
             {
                 name: 'Pedidos',
-                path: '/pedidos',
-            },
-            {
-                name: 'Ajuda',
-                path: '/ajuda',
-            },
-            {
-                name: 'Carrinho',
-                path: '/carrinho',
+                path: '/pedidos-criados',
+                icon: 'mdi-format-list-bulleted',
             },
         ],
     }),

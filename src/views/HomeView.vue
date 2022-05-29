@@ -4,9 +4,6 @@
         <v-row>
             <navigation-button :properties="buttomNewOrder"> </navigation-button>
         </v-row>
-        <v-row>
-            <navigation-button :properties="buttomHelpCenter"> </navigation-button>
-        </v-row>
         <card-submit :properties="cardSubmit"></card-submit>
     </v-container>
 </template>
@@ -32,10 +29,6 @@ export default defineComponent({
             buttomNewOrder: {
                 title: 'Novo Pedido',
                 path: '/cardapio',
-            },
-            buttomHelpCenter: {
-                title: 'Central de Ajuda',
-                path: '/central-ajuda',
             },
             buttomHelp: {
                 title: 'Quero ser atendido',

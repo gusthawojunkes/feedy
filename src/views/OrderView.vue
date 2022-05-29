@@ -1,18 +1,22 @@
 <template>
-    <div class="text-h5 mt-5 mb-12">Pedido</div>
-    <item-list :listItems="listItems"></item-list>
+    <div class="d-flex flex-column justify-end">
+        <div class="text-h5 mt-5 mb-12">Pedido</div>
+        <item-list :itemList="itemList"></item-list>
+        <card-totalizer :properties="cardTotalizer"></card-totalizer>
+    </div>
 </template>
 
 <script>
 import { defineComponent } from 'vue';
 import noImage from '@/assets/no-image.png';
+import ItemList from '@/components/order/ItemList.vue';
+import CardTotalizer from '@/components/cards/CardTotalizer.vue';
 
 export default defineComponent({
-    name: 'HelpCenterView',
+    name: 'OrderView',
 
     data: () => ({
-        noImage: noImage,
-        listItems: [
+        itemList: [
             {
                 uid: 1,
                 orderUid: 1,
@@ -28,7 +32,12 @@ export default defineComponent({
                 src: noImage,
             },
         ],
-        totalizer: { total: 1 },
+        cardTotalizer: { total: 1 },
     }),
+
+    components: {
+        ItemList,
+        CardTotalizer,
+    },
 });
 </script>
