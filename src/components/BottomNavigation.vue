@@ -3,18 +3,6 @@
         <v-btn to="/">
             <v-icon>mdi-home</v-icon>
         </v-btn>
-        <v-btn>
-            <v-icon>mdi-pencil</v-icon>
-        </v-btn>
-        <v-btn>
-            <v-icon>mdi-format-list-bulleted</v-icon>
-        </v-btn>
-        <v-btn>
-            <v-icon>mdi-help</v-icon>
-        </v-btn>
-        <v-btn to="/produtos">
-            <v-icon>mdi-cart</v-icon>
-        </v-btn>
     </v-bottom-navigation>
 </template>
 
@@ -23,7 +11,31 @@ import { defineComponent } from 'vue';
 
 export default defineComponent({
     name: 'BottomNavigation',
-    data: () => ({ value: 'bottom-navigation' }),
+    data: () => ({
+        value: 'bottom-navigation',
+        paths: [
+            {
+                name: 'Home',
+                path: '/',
+            },
+            {
+                name: 'Produtos',
+                path: '/produtos',
+            },
+            {
+                name: 'Pedidos',
+                path: '/pedidos',
+            },
+            {
+                name: 'Ajuda',
+                path: '/ajuda',
+            },
+            {
+                name: 'Carrinho',
+                path: '/carrinho',
+            },
+        ],
+    }),
 });
 </script>
 
