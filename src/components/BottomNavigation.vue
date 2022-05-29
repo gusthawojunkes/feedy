@@ -1,19 +1,7 @@
 <template>
     <v-bottom-navigation :value="value" color="primary">
-        <v-btn to="/">
-            <v-icon>mdi-home</v-icon>
-        </v-btn>
-        <v-btn>
-            <v-icon>mdi-pencil</v-icon>
-        </v-btn>
-        <v-btn>
-            <v-icon>mdi-format-list-bulleted</v-icon>
-        </v-btn>
-        <v-btn>
-            <v-icon>mdi-help</v-icon>
-        </v-btn>
-        <v-btn to="/produtos">
-            <v-icon>mdi-cart</v-icon>
+        <v-btn :to="option.path" v-for="option in options" :key="option.path">
+            <v-icon>{{ option.icon }}</v-icon>
         </v-btn>
     </v-bottom-navigation>
 </template>
@@ -23,7 +11,16 @@ import { defineComponent } from 'vue';
 
 export default defineComponent({
     name: 'BottomNavigation',
-    data: () => ({ value: 'bottom-navigation' }),
+    data: () => ({
+        value: 'bottom-navigation',
+        options: [
+            { icon: 'mdi-home', path: '/' },
+            { icon: 'mdi-pencil', path: '/pedido' },
+            { icon: 'mdi-format-list-bulleted', path: '/pedidos' },
+            { icon: 'mdi-help', path: '' },
+            { icon: 'mdi-cart', path: '/produtos' },
+        ],
+    }),
 });
 </script>
 

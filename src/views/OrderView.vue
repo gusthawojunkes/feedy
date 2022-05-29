@@ -8,7 +8,7 @@ import { defineComponent } from 'vue';
 import noImage from '@/assets/no-image.png';
 
 export default defineComponent({
-    name: 'HelpCenterView',
+    name: 'OrderView',
 
     data: () => ({
         noImage: noImage,

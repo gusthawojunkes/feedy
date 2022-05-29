@@ -115,7 +115,9 @@ export default defineComponent({
             });
         },
         addCart(item) {
-            return this.cartProducts.push(item);
+            console.log(item);
+            this.cartProducts.push(item);
+            this.dialog = false;
         },
     },
 });
