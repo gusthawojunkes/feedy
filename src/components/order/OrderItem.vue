@@ -19,7 +19,7 @@
                 <v-icon dark>mdi-minus</v-icon>
             </v-btn>
 
-            <v-btn color="orange" v-if="!item.quantity"> Remover Item </v-btn>
+            <v-btn color="orange" v-if="item.quantity <= 0 ? true : false"> Remover Item </v-btn>
         </v-card-actions>
     </v-card>
 </template>

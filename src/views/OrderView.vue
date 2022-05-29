@@ -15,25 +15,43 @@ import CardTotalizer from '@/components/cards/CardTotalizer.vue';
 export default defineComponent({
     name: 'OrderView',
 
+    async mounted() {
+        (this.itemList = [
+            {
+                id: 1,
+                name: 'Coca-Cola',
+                price: 2.5,
+                quantity: 3,
+                image: noImage,
+            },
+            {
+                id: 2,
+                name: 'Fanta',
+                price: 2.5,
+                quantity: 1,
+                image: noImage,
+            },
+        ]),
+            (this.cardTotalizer = {
+                total: await this.totalizer(),
+            });
+    },
+
     data: () => ({
-        itemList: [
-            {
-                uid: 1,
-                orderUid: 1,
-                name: 'Teste 1',
-                price: 89.99,
-                src: noImage,
-            },
-            {
-                uid: 2,
-                orderUid: 1,
-                name: 'Teste 2',
-                price: 25.78,
-                src: noImage,
-            },
-        ],
-        cardTotalizer: { total: 1 },
+        itemList: [],
+        cardTotalizer: {
+            total: 0,
+            path: '/pedidos-criados',
+        },
     }),
+
+    methods: {
+        async totalizer() {
+            return this.itemList.reduce((acc, item) => {
+                return acc + item.price * item.quantity;
+            }, 0);
+        },
+    },
 
     components: {
         ItemList,
