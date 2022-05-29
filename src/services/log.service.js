@@ -1,4 +1,4 @@
-import BaseService from './firebase.service';
+import Firestore from './firestore.service';
 import { setDoc } from 'firebase/firestore';
 
 export default class LogService {
@@ -6,8 +6,8 @@ export default class LogService {
         if (!data || !data.uid) {
             throw 'Invalid data, please verify the data object';
         }
-        const database = BaseService.getInstance();
-        const document = BaseService.getDocumentReference(database, 'logs', data.date.toString());
+        const database = Firestore.getInstance();
+        const document = Firestore.getDocumentReference(database, 'logs', data.date.toString());
         return new Promise((resolve, reject) => {
             try {
                 setDoc(document, data).then(() => {

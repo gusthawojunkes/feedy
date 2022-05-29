@@ -11,11 +11,14 @@
             <v-card-text>
                 <v-form ref="productFormulary" lazy-validation>
                     <v-row>
-                        <v-col cols="9">
+                        <v-col cols="8">
                             <v-text-field label="Nome" v-model="newProduct.name"></v-text-field>
                         </v-col>
-                        <v-col cols="3">
+                        <v-col cols="4">
                             <v-text-field label="Preço" type="number" v-model="newProduct.price"></v-text-field>
+                        </v-col>
+                        <v-col cols="12">
+                            <v-combobox label="Categoria" v-model="newProduct.categories" :items="availableCategories" multiple outlined dense></v-combobox>
                         </v-col>
                         <v-col>
                             <v-textarea label="Descrição" v-model="newProduct.description"></v-textarea>
@@ -35,12 +38,17 @@
 <script>
 import { defineComponent } from 'vue';
 import ProductService from '@/services/product.service';
+import CategorieService from '../../services/categorie.service';
 import Helper from '@/utils/helper';
 
 export default defineComponent({
+    mounted() {
+        this.availableCategories = CategorieService.defaults();
+    },
     name: 'ProductRegisterModal',
     data: () => ({
         newProduct: {},
+        availableCategories: [],
     }),
     props: {
         open: { type: Boolean, default: false },

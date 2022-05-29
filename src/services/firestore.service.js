@@ -2,7 +2,7 @@ import { getFirestore, collection, doc, setDoc, deleteDoc, getDocs, updateDoc, g
 import Helper from '@/utils/helper';
 import Logger from '@/utils/logger';
 
-export default class BaseService {
+export default class Firestore {
     static getInstance() {
         return getFirestore();
     }
