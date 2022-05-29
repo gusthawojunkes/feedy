@@ -1,10 +1,6 @@
-# feedy
+# Feedy - Food Service
 
 This template should help get you started developing with Vue 3 in Vite.
-
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.vscode-typescript-vue-plugin).
 
 ## Customize configuration
 
@@ -38,4 +34,64 @@ npm run test:unit
 
 ```sh
 npm run lint
+```
+
+### Product Example
+
+```json
+{
+    "uid": "",
+    "createdAt": 1653843842126,
+    "updatedAt": 1653843842126,
+    "name": "",
+    "description": "",
+    "image": "",
+    "category": "",
+    "price": 0,
+    "quantity": 0
+}
+```
+
+### Order Example
+
+```json
+{
+    "uid": "",
+    "createdAt": 1653843842126,
+    "updatedAt": 1653843842126,
+    "totalAmount": 0,
+    "items": [],
+    "paid": false
+}
+```
+
+### Item Example
+
+```json
+{
+    "uid": "",
+    "createdAt": 1653843842126,
+    "updatedAt": 1653843842126,
+    "orderUid": "",
+    "product": undefined,
+    "quantity": 0,
+    "price": 0,
+    "coments": ""
+}
+```
+
+### Table Example
+
+```json
+{
+    "uid": "",
+    "createdAt": 1653843842126,
+    "updatedAt": 1653843842126,
+    "number": 0,
+    "name": "",
+    "openingDate": 1653843842126,
+    "closingDate": 1653843842126,
+    "status": "",
+    "orders": []
+}
 ```

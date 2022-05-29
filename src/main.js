@@ -4,8 +4,9 @@ import router from './router';
 import vuetify from './plugins/vuetify';
 import { loadFonts } from './plugins/webfontloader';
 import Firebase from './plugins/firebase';
-loadFonts();
 
-Firebase.initialize().then(() => {
+(async () => {
+    loadFonts();
+    await Firebase.initialize();
     createApp(App).use(router).use(vuetify).mount('#app');
-});
+})();

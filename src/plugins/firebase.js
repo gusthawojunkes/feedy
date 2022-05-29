@@ -2,6 +2,10 @@ import { initializeApp } from 'firebase/app';
 import Logger from '@/utils/logger';
 
 export default class Firebase {
+    constructor() {
+        this.INSTANCE = undefined;
+    }
+
     static async initialize() {
         return new Promise((resolve) => {
             try {
@@ -15,6 +19,9 @@ export default class Firebase {
                     measurementId: import.meta.env.VITE_MEASUREMENT_ID,
                 });
                 this.INSTANCE = firebaseApp;
+                if (this.INSTANCE == null) {
+                    throw new Error('Firebase instance failed to initialize');
+                }
                 Logger.info('Database connection successfully established');
             } catch (error) {
                 let message = 'An error occurred while trying to establish the connection to the database';
@@ -29,12 +36,5 @@ export default class Firebase {
                 resolve();
             }
         });
-    }
-
-    static getInstance() {
-        if (Firebase.INSTANCE == null) {
-            throw new Error('Firebase instance not initialized');
-        }
-        return Firebase.INSTANCE;
     }
 }
