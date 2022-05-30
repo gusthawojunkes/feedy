@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <div class="text-h5 mt-5 mb-12">Olá, mesa</div>
+        <div class="text-h5 mt-5 mb-12">Olá, mesa {{ tableId }}</div>
         <v-row v-for="option in pathOptions" :key="option.path">
             <NavigationButton :properties="option"> </NavigationButton>
         </v-row>
@@ -34,6 +34,22 @@ export default defineComponent({
             confirmationTitle: 'Confima a solicitação de ajuda?',
         },
     }),
+
+    watch: {
+        $route: {
+            immediate: true,
+            handler(to) {
+                const table = sessionStorage.getItem('table');
+                if (!table && to.redirectedFrom) {
+                    const { id } = to.redirectedFrom.params;
+                    sessionStorage.setItem('table', id);
+                    this.tableId = id;
+                } else {
+                    this.tableId = table;
+                }
+            },
+        },
+    },
 
     components: {
         NavigationButton,
