@@ -29,7 +29,7 @@
             </v-toolbar>
             <v-responsive class="overflow-y-auto scroll">
                 <v-lazy
-                    v-model="isActive"
+                    v-model="dialog"
                     :options="{
                         threshold: 0.5,
                     }"
@@ -84,11 +84,12 @@ export default defineComponent({
     async mounted() {
         this.products = await ProductService.getAll();
         this.categories = CategorieService.defaults();
+        this.order = {};
     },
     data: () => ({
         tab: 'Geral',
         dialog: false,
-        isActive: true,
+        order: {},
         products: [],
         categories: [],
         items: [],
@@ -101,7 +102,6 @@ export default defineComponent({
         openItemModal(newItem) {
             this.dialog = true;
             this.item.product = newItem;
-            console.log(this.item);
         },
         incrementItem() {
             this.item.quantity = this.item.quantity + 1;

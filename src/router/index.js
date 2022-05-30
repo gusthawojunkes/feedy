@@ -22,7 +22,7 @@ const router = createRouter({
         {
             path: '/pedidos',
             name: 'orders',
-            component: () => import('@/views/Orders.vue'),
+            component: () => import('@/views/OrderList.vue'),
         },
         {
             path: '/pedido',

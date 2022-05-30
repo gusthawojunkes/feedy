@@ -21,7 +21,7 @@ export default defineComponent({
         pathOptions: [
             {
                 title: 'Novo Pedido',
-                path: '/cardapio',
+                path: '/pedido',
             },
             {
                 title: 'Central de Ajuda',
