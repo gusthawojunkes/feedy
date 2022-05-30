@@ -1,6 +1,6 @@
 <template>
     <v-div v-for="item in itemList" :key="item">
-        <order-item :item="item"></order-item>
+        <orderItem :item="item"></orderItem>
     </v-div>
 </template>
 

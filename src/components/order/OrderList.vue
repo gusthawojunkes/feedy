@@ -1,5 +1,5 @@
 <template>
-    <v-div v-for="order in orders" :key="order.getUid">
+    <v-div v-for="order in orders" :key="order.uid">
         <card-order :order="order"></card-order>
     </v-div>
 </template>

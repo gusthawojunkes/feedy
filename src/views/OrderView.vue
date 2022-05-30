@@ -33,7 +33,7 @@ export default defineComponent({
             },
         ]),
             (this.cardTotalizer = {
-                total: await this.totalizer(),
+                total: this.totalizer(),
             });
     },
 
@@ -46,7 +46,7 @@ export default defineComponent({
     }),
 
     methods: {
-        async totalizer() {
+        totalizer() {
             return this.itemList.reduce((acc, item) => {
                 return acc + item.price * item.quantity;
             }, 0);
