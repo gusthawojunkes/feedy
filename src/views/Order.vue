@@ -1,9 +1,9 @@
 <template>
     <v-tabs v-model="tab" class="mb-5">
-        <v-tab v-for="category in productsCategorys" :key="category" :value="category">{{ category }} </v-tab>
+        <v-tab v-for="category in categories" :key="category" :value="category">{{ category }} </v-tab>
     </v-tabs>
     <v-window v-model="tab" height="500px">
-        <v-window-item v-for="category in productsCategorys" :key="category" :value="category">
+        <v-window-item v-for="category in categories" :key="category" :value="category">
             <v-list v-for="product in filteredItens(category)" :key="product.getUid" :text="product.getName" @click="openItemModal(product)">
                 <v-card class="mx-auto d-flex flex-no-wrap">
                     <v-img :src="product.image" height="150px" cover></v-img>
@@ -16,7 +16,7 @@
         </v-window-item>
     </v-window>
     <div class="fill-height my-4">
-        <v-btn block> Confirmar Pedido </v-btn>
+        <v-btn block @click="sendOrder()"> Confirmar Pedido </v-btn>
     </div>
     <v-dialog v-model="dialog" fullscreen>
         <v-card>
@@ -62,7 +62,7 @@
                                 </v-btn>
                             </div>
                             <div class="text-center my-1">
-                                <v-btn rounded dark size="large" @click="addCart(item)"> Adicionar </v-btn>
+                                <v-btn rounded dark size="large" @click="addCart(item)" :disabled="item.quantity == 0"> Adicionar </v-btn>
                             </div>
                         </div>
                     </div>
@@ -75,20 +75,23 @@
 import { defineComponent } from 'vue';
 import CategorieService from '@/services/categorie.service';
 import ProductService from '@/services/product.service';
+import OrderService from '../services/order.service';
+import FirestoreUtils from '../utils/firestore.util';
+import _ from 'lodash';
 
 export default defineComponent({
     name: 'ProductList',
     async mounted() {
         this.products = await ProductService.getAll();
-        this.productsCategorys = CategorieService.defaults();
+        this.categories = CategorieService.defaults();
     },
     data: () => ({
         tab: 'Geral',
         dialog: false,
         isActive: true,
         products: [],
-        productsCategorys: [],
-        cartProducts: [],
+        categories: [],
+        items: [],
         item: {
             product: {},
             quantity: 0,
@@ -115,9 +118,26 @@ export default defineComponent({
             });
         },
         addCart(item) {
-            console.log(item);
-            this.cartProducts.push(item);
+            this.items.push(item);
+            this.item = {
+                product: {},
+                quantity: 0,
+            };
             this.dialog = false;
+            this.$toast.success(`Item adicionado ao carrinho!`);
+        },
+        sendOrder() {
+            const order = _.extend(FirestoreUtils.getBaseInfo(), {
+                items: this.items,
+                totalAmount: this.items.reduce((sum, item) => {
+                    return sum + item.product.price * item.quantity;
+                }, 0),
+                paid: false,
+            });
+            OrderService.save(order).then(() => {
+                this.$toast.success(`Pedido enviado com sucesso!`);
+                this.$router.push('/pedidos');
+            });
         },
     },
 });
