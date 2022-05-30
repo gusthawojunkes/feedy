@@ -15,19 +15,19 @@ const router = createRouter({
             component: () => import('@/views/configuration/ProductsConfiguration.vue'),
         },
         {
-            path: '/pedido-aberto',
+            path: '/pedido/abertos',
             name: 'order',
             component: () => import('@/views/OrderView.vue'),
         },
         {
-            path: '/pedidos-criados',
+            path: '/pedidos',
             name: 'orders',
-            component: () => import('@/views/OrdersView.vue'),
+            component: () => import('@/views/OrderList.vue'),
         },
         {
-            path: '/cardapio',
-            name: 'cardapio',
-            component: () => import('@/components/menu/ProductList.vue'),
+            path: '/pedido',
+            name: 'pedido',
+            component: () => import('@/views/Order.vue'),
         },
         {
             path: '/central-ajuda',
