@@ -47,7 +47,6 @@ export default defineComponent({
         },
         create() {
             this.createProductDialog = true;
-            console.log(this.createProductDialog);
         },
         reloadProducts(newProduct) {
             if (newProduct) {
