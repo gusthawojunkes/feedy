@@ -17,6 +17,7 @@
 <script>
 import Helper from '@/utils/helper';
 import BottomNavigationVue from '@/components/BottomNavigation.vue';
+import '@/styles/styles.css';
 
 const APPLICATION_NAME = 'Feedy';
 

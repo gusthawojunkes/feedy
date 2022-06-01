@@ -57,3 +57,10 @@ export default defineComponent({
     },
 });
 </script>
+
+<style>
+.v-btn,
+.v-row {
+    color: #009688;
+}
+</style>

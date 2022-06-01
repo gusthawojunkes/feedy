@@ -3,11 +3,9 @@
     <v-dialog v-model="openSubmitCard">
         <v-card class="pa-4">
             <v-card-title class="text-center"> {{ properties.confirmationTitle }} </v-card-title>
-            <v-card-text class="d-flex justify-center">
-                <v-btn color="primary" class="ma-2" @click="openNextCard()" block> Confirmar </v-btn>
-            </v-card-text>
-            <v-card-actions class="d-flex justify-center">
-                <v-btn color="primary" text @click="openSubmitCard = false" block> Cancelar </v-btn>
+            <v-card-actions class="d-flex flex-column">
+                <v-btn block variant="contained-text" @click="openNextCard()">Confirmar</v-btn>
+                <v-btn block variant="plain" @click="openSubmitCard = false" class="mt-4">Cancelar</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -15,8 +13,8 @@
     <v-dialog v-model="openFinishingCard">
         <v-card class="px-1 py-12">
             <v-card-title class="text-center"> {{ properties.finishingTitle }} </v-card-title>
-            <v-card-actions class="d-flex justify-center">
-                <v-btn color="primary" @click="openFinishingCard = false" block> Ok </v-btn>
+            <v-card-actions>
+                <v-btn @click="openFinishingCard = false" block> Ok </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>

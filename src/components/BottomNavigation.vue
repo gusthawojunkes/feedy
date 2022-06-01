@@ -1,5 +1,5 @@
 <template>
-    <v-bottom-navigation :value="value" color="primary">
+    <v-bottom-navigation :value="value" color="white" bg-color="teal">
         <v-btn :to="option.path" v-for="option in options" :key="option.path">
             <v-icon>{{ option.icon }}</v-icon>
         </v-btn>
@@ -23,5 +23,3 @@ export default defineComponent({
     }),
 });
 </script>
-
-<style></style>
