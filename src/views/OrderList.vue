@@ -38,7 +38,8 @@ export default defineComponent({
 
     methods: {
         async updateOrders() {
-            this.orders = await OrderService.getAll();
+            const tableNumber = sessionStorage.getItem('table');
+            this.orders = await OrderService.getAllByTable(tableNumber);
             _.sortBy(this.orders, 'createdAt');
         },
     },

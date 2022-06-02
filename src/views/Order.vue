@@ -133,6 +133,7 @@ export default defineComponent({
                     return sum + item.product.price * item.quantity;
                 }, 0),
                 paid: false,
+                tableNumber: sessionStorage.getItem('table'),
             });
             OrderService.save(order).then(() => {
                 this.$toast.success(`Pedido enviado com sucesso!`);

@@ -50,7 +50,7 @@ export default class Firestore {
             try {
                 setDoc(document, data).then(() => {
                     Logger.info(`Added document '${data.uid}' to collection '${collectionName}'`);
-                    resolve();
+                    resolve(data);
                 });
             } catch (error) {
                 Helper.handleError(error);

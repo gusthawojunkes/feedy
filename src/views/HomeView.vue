@@ -14,6 +14,7 @@
 import { defineComponent } from 'vue';
 import NavigationButton from '@/components/buttons/NavigationButton.vue';
 import CardSubmit from '@/components/cards/CardSubmit.vue';
+import TableService from '../services/table.service';
 
 export default defineComponent({
     name: 'HomeView',
@@ -47,7 +48,14 @@ export default defineComponent({
                 } else {
                     this.tableId = table;
                 }
+                this.validateTable();
             },
+        },
+    },
+
+    methods: {
+        async validateTable() {
+            TableService.getByNumber(this.tableId).then((response) => console.log(response));
         },
     },
 
