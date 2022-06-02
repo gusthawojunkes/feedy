@@ -1,5 +1,5 @@
 <template>
-    <v-btn class="my-12 py-12" @click="openSubmitCard = true" block> {{ properties.helpTitle }} </v-btn>
+    <v-btn class="my-12 py-12" @click="openSubmitCard = true" block max-width="500"> {{ properties.helpTitle }} </v-btn>
     <v-dialog v-model="openSubmitCard">
         <v-card class="pa-4">
             <v-card-title class="text-center"> {{ properties.confirmationTitle }} </v-card-title>

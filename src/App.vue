@@ -17,7 +17,6 @@
 <script>
 import Helper from '@/utils/helper';
 import BottomNavigationVue from '@/components/BottomNavigation.vue';
-import '@/styles/styles.css';
 
 const APPLICATION_NAME = 'Feedy';
 
@@ -44,3 +43,16 @@ export default {
     },
 };
 </script>
+
+<style>
+.v-main {
+    width: 800px;
+    margin: 0 auto;
+}
+
+.v-btn,
+.v-row,
+.v-tabs {
+    color: #009688;
+}
+</style>

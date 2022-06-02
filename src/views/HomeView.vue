@@ -23,10 +23,6 @@ export default defineComponent({
                 title: 'Novo Pedido',
                 path: '/pedido',
             },
-            {
-                title: 'Central de Ajuda',
-                path: '/central-ajuda',
-            },
         ],
         cardSubmit: {
             helpTitle: 'Quero ser atendido',
@@ -57,10 +53,3 @@ export default defineComponent({
     },
 });
 </script>
-
-<style>
-.v-btn,
-.v-row {
-    color: #009688;
-}
-</style>

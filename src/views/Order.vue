@@ -1,23 +1,35 @@
 <template>
-    <v-tabs v-model="tab" class="mb-5">
+    <v-tabs v-model="tab" class="my-12">
         <v-tab v-for="category in categories" :key="category" :value="category">{{ category }} </v-tab>
     </v-tabs>
     <v-window v-model="tab" height="500px">
         <v-window-item v-for="category in categories" :key="category" :value="category">
             <v-list v-for="product in filteredItens(category)" :key="product.getUid" :text="product.getName" @click="openItemModal(product)">
                 <v-card class="mx-auto d-flex flex-no-wrap">
-                    <v-img :src="product.image" height="150px" cover></v-img>
-                    <v-col>
-                        <v-card-title> {{ product.name }} </v-card-title>
-                        <v-card-subtitle> R$ {{ product.price }} </v-card-subtitle>
+                    <v-img :src="product.image" height="180px" cover></v-img>
+                    <v-col class="d-flex justify-center">
+                        <div>
+                            <v-card-title> {{ product.name }} </v-card-title>
+                            <v-card-subtitle> R$ {{ product.price }} </v-card-subtitle>
+                            <v-card-text>
+                                <div>{{ item.quantity }}</div>
+                            </v-card-text>
+                            <v-btn color="orange" variant="outline">
+                                <v-icon dark>mdi-plus</v-icon>
+                            </v-btn>
+                            <v-btn color="orange" variant="outline">
+                                <v-icon dark>mdi-minus</v-icon>
+                            </v-btn>
+                        </div>
+                        <div><v-btn color="orange"> Adicionar </v-btn></div>
                     </v-col>
                 </v-card>
             </v-list>
         </v-window-item>
     </v-window>
-    <div class="fill-height my-4">
-        <v-btn block @click="sendOrder()"> Confirmar Pedido </v-btn>
-    </div>
+
+    <v-btn class="my-12" block @click="sendOrder()"> Confirmar Pedido </v-btn>
+
     <v-dialog v-model="dialog" fullscreen>
         <v-card>
             <v-toolbar>
