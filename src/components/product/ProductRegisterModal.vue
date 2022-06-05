@@ -66,6 +66,7 @@ export default defineComponent({
 
                 ProductService.save(this.newProduct).then(() => {
                     this.$emit('on-create', this.newProduct);
+                    this.$toast.success(`${this.newProduct.name} adicionado com sucesso na listagem de produtos!`);
                     this.newProduct = {};
                 });
             }
