@@ -68,6 +68,7 @@ export default defineComponent({
                     this.$emit('on-create', this.newProduct);
                     this.newProduct = {};
                 });
+                this.$toast.success(`Produto Criado com Sucesso!`);
             }
         },
     },

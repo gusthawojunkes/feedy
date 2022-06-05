@@ -1,7 +1,8 @@
 <template>
-    <v-row>
+    <div class="text-h5 mt-5 mb-12">Configuração de Produtos</div>
+    <v-row class="my-8">
         <v-col cols="12">
-            <v-btn @click="create()">
+            <v-btn block @click="create()">
                 <span>Novo</span>
                 <v-icon>mdi-plus</v-icon>
             </v-btn>
@@ -9,7 +10,7 @@
         </v-col>
     </v-row>
     <v-row v-if="products.length > 0">
-        <v-col cols="12" lg="3" v-for="product in products" :key="product.name">
+        <v-col cols="12" lg="6" v-for="product in products" :key="product.name">
             <ProductCard :product="product" @remove="remove($event)"></ProductCard>
         </v-col>
     </v-row>
@@ -41,6 +42,7 @@ export default defineComponent({
             ProductService.remove(uid).then(() => {
                 this.products = this.products.filter((product) => product.uid !== uid);
             });
+            this.$toast.success(`Produto Excluido com Sucesso!`);
         },
         edit(uid) {
             console.log(uid);

@@ -1,21 +1,28 @@
 <template>
     <v-card elevation="2">
-        <v-img :src="product.image"> </v-img>
-        <v-card-title>
+        <v-img :src="product.image" max-height="150" cover> </v-img>
+        <v-card-title class="my-1">
             {{ product.name }}
             <v-spacer></v-spacer>
             {{ toBrazilianCurrency(product.price) }}
         </v-card-title>
-        <v-card-text>
-            {{ product.description }}
-        </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="my-4">
             <v-spacer></v-spacer>
             <v-btn icon @click="edit(product.uid)">
                 <v-icon dark> mdi-pencil </v-icon>
             </v-btn>
             <v-btn icon @click="remove(product.uid)"> <v-icon dark> mdi-delete </v-icon> </v-btn>
+            <v-btn v-if="product.description" :icon="showDescription ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="showDescription = !showDescription"></v-btn>
         </v-card-actions>
+        <v-expand-transition>
+            <div v-show="showDescription">
+                <v-divider></v-divider>
+
+                <v-card-text>
+                    {{ product.description }}
+                </v-card-text>
+            </div>
+        </v-expand-transition>
     </v-card>
 </template>
 
@@ -27,6 +34,9 @@ export default defineComponent({
     props: {
         product: { type: Object, default: () => {} },
     },
+    data: () => ({
+        showDescription: false,
+    }),
     methods: {
         remove(uid) {
             this.$emit('remove', uid);
@@ -40,3 +50,9 @@ export default defineComponent({
     },
 });
 </script>
+
+<style>
+.v-btn {
+    color: #009688;
+}
+</style>

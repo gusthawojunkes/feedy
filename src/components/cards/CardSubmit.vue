@@ -46,3 +46,9 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped>
+.v-btn {
+    color: #009688;
+}
+</style>
