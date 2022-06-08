@@ -1,5 +1,5 @@
 <template>
-    <v-btn class="my-12 py-12" block :to="properties.path">{{ properties.title }}</v-btn>
+    <v-btn class="py-12" block :to="properties.path">{{ properties.title }}</v-btn>
 </template>
 
 <script>
