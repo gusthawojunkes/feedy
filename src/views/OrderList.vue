@@ -1,22 +1,9 @@
 <template>
     <v-container>
-        <v-row>
-            <v-col v-for="(order, index) in orders" :key="order.uid">
-                <v-card>
-                    <v-card-title>
-                        <span class="headline">Pedido #{{ index + 1 }}</span>
-                        <v-spacer></v-spacer>
-                        <span>{{ order.paid === true ? 'FECHADO' : 'ABERTO' }}</span>
-                    </v-card-title>
-                    <v-card-text>
-                        <div v-for="item in order.items" :key="item.uid" style="margin-bottom: 2px">
-                            <v-badge color="info" :content="item.quantity" inline></v-badge>
-                            {{ item.product.name }}
-                        </div>
-                    </v-card-text>
-                </v-card>
-            </v-col>
-        </v-row>
+        <div class="text-h5 mt-5 mb-12">Histórico de Pedidos</div>
+        <div v-for="(order, index) in this.orders" :key="order.uid">
+            <OrderDetail :order="order" :number="this.orders.length - index"></OrderDetail>
+        </div>
     </v-container>
 </template>
 
@@ -24,9 +11,10 @@
 import { defineComponent } from 'vue';
 import OrderService from '@/services/order.service';
 import _ from 'lodash';
+import OrderDetail from '@/components/order/OrderDetail.vue';
 
 export default defineComponent({
-    name: 'OrdersView',
+    name: 'OrdersList',
 
     async mounted() {
         await this.updateOrders();
@@ -39,8 +27,10 @@ export default defineComponent({
     methods: {
         async updateOrders() {
             this.orders = await OrderService.getAll();
-            _.sortBy(this.orders, 'createdAt');
+            this.orders = _.sortBy(this.orders, 'createdAt').reverse();
         },
     },
+
+    components: { OrderDetail },
 });
 </script>

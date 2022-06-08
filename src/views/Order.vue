@@ -1,75 +1,33 @@
 <template>
-    <v-tabs v-model="tab" class="mb-5">
-        <v-tab v-for="category in categories" :key="category" :value="category">{{ category }} </v-tab>
+    <v-tabs v-model="tab" class="my-12" fixed-tabs>
+        <v-tab v-for="category in categories" :key="category" :value="category" class="mx-8">{{ category }} </v-tab>
     </v-tabs>
     <v-window v-model="tab" height="500px">
         <v-window-item v-for="category in categories" :key="category" :value="category">
-            <v-list v-for="product in filteredItens(category)" :key="product.getUid" :text="product.getName" @click="openItemModal(product)">
-                <v-card class="mx-auto d-flex flex-no-wrap">
-                    <v-img :src="product.image" height="150px" cover></v-img>
-                    <v-col>
-                        <v-card-title> {{ product.name }} </v-card-title>
-                        <v-card-subtitle> R$ {{ product.price }} </v-card-subtitle>
+            <v-list v-for="product in filteredItens(category)" :key="product.getUid" :text="product.getName">
+                <v-card class="mx-auto my-4 d-flex flex-no-wrap">
+                    <v-img :src="product.image" height="180px" cover></v-img>
+                    <v-col class="d-flex flex-column justify-center">
+                        <v-card-title>{{ product.name }} </v-card-title>
+                        <div>
+                            <v-card-subtitle> R$ {{ product.price }} </v-card-subtitle>
+                            <v-chip class="ma-3" size="x-small" color="green" v-if="getQuantity(product)"> Adicionado ao Pedido </v-chip>
+                        </div>
                     </v-col>
+                    <div class="d-flex flex-column justify-center mr-4">
+                        <v-btn variant="outline" @click="incrementItem(product)">
+                            <v-icon dark>mdi-plus</v-icon>
+                        </v-btn>
+                        <div class="mx-8 my-4">{{ getQuantity(product) }}</div>
+                        <v-btn variant="outline" @click="decrementItem(product)">
+                            <v-icon dark>mdi-minus</v-icon>
+                        </v-btn>
+                    </div>
                 </v-card>
             </v-list>
         </v-window-item>
     </v-window>
-    <div class="fill-height my-4">
-        <v-btn block @click="sendOrder()"> Confirmar Pedido </v-btn>
-    </div>
-    <v-dialog v-model="dialog" fullscreen>
-        <v-card>
-            <v-toolbar>
-                <v-btn icon dark @click="dialog = false">
-                    <v-icon>mdi-chevron-left</v-icon>
-                </v-btn>
-                <v-toolbar-title>Voltar</v-toolbar-title>
-                <v-spacer></v-spacer>
-            </v-toolbar>
-            <v-responsive class="overflow-y-auto scroll">
-                <v-lazy
-                    v-model="dialog"
-                    :options="{
-                        threshold: 0.5,
-                    }"
-                    transition="fade-transition"
-                >
-                    <div>
-                        <v-img height="500" :src="item.product.image" cover class="align-end" gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"> </v-img>
-                        <v-list class="mx-3">
-                            <v-card>
-                                <div class="mt-9">
-                                    <v-card-subtitle class="text-1 font-weight-black">{{ item.product.name }}</v-card-subtitle>
-                                    <v-card-title> R$ {{ item.product.price }}</v-card-title>
-                                </div>
-
-                                <v-divider class="mx-4"></v-divider>
-
-                                <v-card-text>
-                                    <div class="mt-4 mb-9">{{ item.product.description }}</div>
-                                </v-card-text>
-                            </v-card>
-                        </v-list>
-                        <div class="d-flex justify-space-between ma-3">
-                            <div>
-                                <v-btn icon dark @click="decrementItem()">
-                                    <v-icon>mdi-minus</v-icon>
-                                </v-btn>
-                                <h1 class="mx-3">{{ this.item.quantity }}</h1>
-                                <v-btn icon dark text @click="incrementItem()">
-                                    <v-icon>mdi-plus</v-icon>
-                                </v-btn>
-                            </div>
-                            <div class="text-center my-1">
-                                <v-btn rounded dark size="large" @click="addCart(item)" :disabled="item.quantity == 0"> Adicionar </v-btn>
-                            </div>
-                        </div>
-                    </div>
-                </v-lazy>
-            </v-responsive>
-        </v-card>
-    </v-dialog>
+    <v-btn class="my-12" color="#009688" block @click="sendOrder()"> Confirmar Pedido </v-btn>
 </template>
 <script>
 import { defineComponent } from 'vue';
@@ -84,11 +42,11 @@ export default defineComponent({
     async mounted() {
         this.products = await ProductService.getAll();
         this.categories = CategorieService.defaults();
-        this.order = {};
+        this.order = this.getOrder();
+        this.items = this.getItems();
     },
     data: () => ({
         tab: 'Geral',
-        dialog: false,
         order: {},
         products: [],
         categories: [],
@@ -97,18 +55,40 @@ export default defineComponent({
             product: {},
             quantity: 0,
         },
+        orderConfirmation: {
+            title: 'Deseja confirmar o Pedido?',
+            model: true,
+        },
     }),
     methods: {
         openItemModal(newItem) {
             this.dialog = true;
             this.item.product = newItem;
         },
-        incrementItem() {
-            this.item.quantity = this.item.quantity + 1;
+        incrementItem(product) {
+            const item = this.items.find((item) => item.product.uid === product.uid);
+            if (item) {
+                this.items.indexOf(item).quantity++;
+            } else {
+                this.items.push({
+                    product,
+                    quantity: 1,
+                });
+                this.$toast.success(`Produto Adicionado ao carrinho!`);
+            }
+            console.log(this.items);
         },
-        decrementItem() {
-            if (this.item.quantity == 0) return;
-            this.item.quantity = this.item.quantity - 1;
+        decrementItem(product) {
+            const item = this.items.find((item) => item.product.uid === product.uid);
+            if (item) {
+                if (item.quantity > 1) {
+                    this.items.indexOf(item).quantity--;
+                } else {
+                    this.items.splice(this.items.indexOf(item), 1);
+                    this.$toast.success(`Produto Removido do carrinho!`);
+                }
+            }
+            console.log(this.items);
         },
         filteredItens(category) {
             if (category == 'Geral') return this.products;
@@ -116,6 +96,16 @@ export default defineComponent({
             return this.products.filter((product) => {
                 return product.categories.includes(category);
             });
+        },
+        getQuantity(product) {
+            if (this.items) {
+                const item = this.items.find((item) => item.product.uid === product.uid);
+                if (item) {
+                    return this.items.indexOf(item).quantity;
+                }
+            } else {
+                return 0;
+            }
         },
         addCart(item) {
             this.items.push(item);
@@ -126,18 +116,54 @@ export default defineComponent({
             this.dialog = false;
             this.$toast.success(`Item adicionado ao carrinho!`);
         },
+        removeCart(item) {
+            this.items.push(item);
+            this.item = {
+                product: {},
+                quantity: 0,
+            };
+            this.dialog = false;
+            this.$toast.success(`Item removido do carrinho!`);
+        },
         sendOrder() {
-            const order = _.extend(FirestoreUtils.getBaseInfo(), {
-                items: this.items,
-                totalAmount: this.items.reduce((sum, item) => {
-                    return sum + item.product.price * item.quantity;
-                }, 0),
-                paid: false,
-            });
-            OrderService.save(order).then(() => {
-                this.$toast.success(`Pedido enviado com sucesso!`);
-                this.$router.push('/pedidos');
-            });
+            if (sessionStorage.getItem('order')) {
+                let oldOrder = JSON.parse(sessionStorage.getItem('order'));
+                oldOrder.items = this.items;
+
+                OrderService.save(oldOrder).then(() => {
+                    this.$toast.success(`Pedido Atualizado com sucesso!`);
+                    this.$router.push('/pedidos');
+                });
+
+                sessionStorage.setItem('order', JSON.stringify(oldOrder));
+            } else {
+                const order = _.extend(FirestoreUtils.getBaseInfo(), {
+                    items: this.items,
+                    totalAmount: this.items.reduce((sum, item) => {
+                        return sum + item.product.price * item.quantity;
+                    }, 0),
+                    paid: false,
+                });
+                OrderService.save(order).then(() => {
+                    this.$toast.success(`Pedido Criado com sucesso!`);
+                    this.$router.push('/pedidos');
+                });
+                sessionStorage.setItem('order', JSON.stringify(order));
+            }
+        },
+        getOrder() {
+            if (sessionStorage.getItem('order')) {
+                return JSON.parse(sessionStorage.getItem('order'));
+            } else {
+                return {};
+            }
+        },
+        getItems() {
+            if (this.order.items) {
+                return this.order.items;
+            } else {
+                return [];
+            }
         },
     },
 });
