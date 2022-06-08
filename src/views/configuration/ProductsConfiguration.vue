@@ -40,6 +40,7 @@ export default defineComponent({
         remove(uid) {
             ProductService.remove(uid).then(() => {
                 this.products = this.products.filter((product) => product.uid !== uid);
+                this.$toast.success('Produto removido com sucesso');
             });
         },
         edit(uid) {

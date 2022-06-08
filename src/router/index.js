@@ -10,6 +10,11 @@ const router = createRouter({
             component: HomeView,
         },
         {
+            path: '/mesa/:id',
+            name: 'mesa',
+            redirect: '/',
+        },
+        {
             path: '/produtos',
             name: 'produtos',
             component: () => import('@/views/configuration/ProductsConfiguration.vue'),
