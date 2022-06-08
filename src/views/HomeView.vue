@@ -19,7 +19,7 @@ import CardSubmit from '@/components/cards/CardSubmit.vue';
 export default defineComponent({
     name: 'HomeView',
 
-    async mounted() {
+    mounted() {
         this.createOrder = this.validateOpenOrder();
     },
 
@@ -49,12 +49,6 @@ export default defineComponent({
                 } else {
                     this.tableId = table;
                 }
-
-                this.$toast.info(this.errorMessage, {
-                    duration: false,
-                    queue: true,
-                    dismissible: true,
-                });
             },
         },
     },

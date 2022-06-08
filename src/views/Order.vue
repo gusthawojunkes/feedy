@@ -66,8 +66,9 @@ export default defineComponent({
             this.item.product = newItem;
         },
         incrementItem(product) {
-            if (this.items.find((item) => item.product.uid === product.uid)) {
-                this.items.find((item) => item.product.uid === product.uid).quantity++;
+            const item = this.items.find((item) => item.product.uid === product.uid);
+            if (item) {
+                this.items.indexOf(item).quantity++;
             } else {
                 this.items.push({
                     product,
@@ -78,11 +79,12 @@ export default defineComponent({
             console.log(this.items);
         },
         decrementItem(product) {
-            if (this.items.find((item) => item.product.uid === product.uid)) {
-                if (this.items.find((item) => item.product.uid === product.uid).quantity > 1) {
-                    this.items.find((item) => item.product.uid === product.uid).quantity--;
+            const item = this.items.find((item) => item.product.uid === product.uid);
+            if (item) {
+                if (item.quantity > 1) {
+                    this.items.indexOf(item).quantity--;
                 } else {
-                    this.items.splice(this.items.indexOf(this.items.find((item) => item.product.uid === product.uid)), 1);
+                    this.items.splice(this.items.indexOf(item), 1);
                     this.$toast.success(`Produto Removido do carrinho!`);
                 }
             }
@@ -96,8 +98,11 @@ export default defineComponent({
             });
         },
         getQuantity(product) {
-            if (this.items && this.items.find((item) => item.product.uid === product.uid)) {
-                return this.items.find((item) => item.product.uid === product.uid).quantity;
+            if (this.items) {
+                const item = this.items.find((item) => item.product.uid === product.uid);
+                if (item) {
+                    return this.items.indexOf(item).quantity;
+                }
             } else {
                 return 0;
             }
@@ -118,7 +123,7 @@ export default defineComponent({
                 quantity: 0,
             };
             this.dialog = false;
-            this.$toast.success(`Item adicionado ao carrinho!`);
+            this.$toast.success(`Item removido do carrinho!`);
         },
         sendOrder() {
             if (sessionStorage.getItem('order')) {

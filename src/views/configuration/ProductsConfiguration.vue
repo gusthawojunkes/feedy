@@ -39,10 +39,17 @@ export default defineComponent({
     }),
     methods: {
         remove(uid) {
-            ProductService.remove(uid).then(() => {
-                this.products = this.products.filter((product) => product.uid !== uid);
-            });
-            this.$toast.success(`Produto Excluido com Sucesso!`);
+            ProductService.remove(uid)
+                .then(() => {
+                    this.products = this.products.filter((product) => product.uid !== uid);
+                    this.$toast.success(`Produto Excluido com Sucesso!`);
+                })
+                .catch((error) => {
+                    if (error && error.message) {
+                        console.error(error.message);
+                    }
+                    this.$toast.error(`Erro ao Excluir Produto`);
+                });
         },
         edit(uid) {
             console.log(uid);

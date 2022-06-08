@@ -24,7 +24,7 @@ const APPLICATION_NAME = 'Feedy';
 
 export default {
     name: 'App',
-    async mounted() {
+    mounted() {
         this.isDesktop = Helper.isDesktop();
     },
 

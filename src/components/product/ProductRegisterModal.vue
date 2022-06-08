@@ -64,11 +64,18 @@ export default defineComponent({
                 this.newProduct.createdAt = new Date();
                 this.newProduct.updatedAt = new Date();
 
-                ProductService.save(this.newProduct).then(() => {
-                    this.$emit('on-create', this.newProduct);
-                    this.newProduct = {};
-                });
-                this.$toast.success(`Produto Criado com Sucesso!`);
+                ProductService.save(this.newProduct)
+                    .then(() => {
+                        this.$emit('on-create', this.newProduct);
+                        this.newProduct = {};
+                        this.$toast.success(`Produto Criado com Sucesso!`);
+                    })
+                    .catch((error) => {
+                        if (error && error.massage) {
+                            console.error(error.massage);
+                        }
+                        this.$toast.error(`Erro ao criar o produto!`);
+                    });
             }
         },
     },
