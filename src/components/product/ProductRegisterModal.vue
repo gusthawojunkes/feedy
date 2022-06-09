@@ -9,19 +9,19 @@
                 </v-btn>
             </v-card-title>
             <v-card-text>
-                <v-form ref="productFormulary" lazy-validation>
+                <v-form v-model="valid" ref="productFormulary" lazy-validation>
                     <v-row>
                         <v-col cols="8">
-                            <v-text-field label="Nome" v-model="newProduct.name"></v-text-field>
+                            <v-text-field label="Nome" v-model="newProduct.name" required :rules="nameRules"></v-text-field>
                         </v-col>
                         <v-col cols="4">
-                            <v-text-field label="Preço" type="number" v-model="newProduct.price"></v-text-field>
+                            <v-text-field label="Preço" type="number" v-model="newProduct.price" :rules="priceRules" required></v-text-field>
                         </v-col>
                         <v-col cols="12">
-                            <v-combobox label="Categoria" v-model="newProduct.categories" :items="availableCategories" multiple outlined dense></v-combobox>
+                            <v-select label="Categoria" v-model="newProduct.categories" :rules="categoryRules" :items="availableCategories" multiple outlined dense required ref="categorys"></v-select>
                         </v-col>
                         <v-col>
-                            <v-textarea label="Descrição" v-model="newProduct.description"></v-textarea>
+                            <v-textarea label="Descrição" rows="2" v-model="newProduct.description" :rules="descriptionRules" required></v-textarea>
                         </v-col>
                     </v-row>
                 </v-form>
@@ -29,6 +29,7 @@
             <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn @click="close()">Cancelar</v-btn>
+                <v-btn @click="reset()">Limpar</v-btn>
                 <v-btn @click="register()">Cadastrar</v-btn>
             </v-card-actions>
         </v-card>
@@ -47,8 +48,13 @@ export default defineComponent({
     },
     name: 'ProductRegisterModal',
     data: () => ({
+        valid: true,
         newProduct: {},
         availableCategories: [],
+        nameRules: [(name) => !!name || 'Nome é obrigatório'],
+        priceRules: [(preco) => !!preco || 'Preço é obrigatório'],
+        categoryRules: [(category) => !!category || 'Categoria é obrigatório'],
+        descriptionRules: [(description) => !!description || 'Descrição é obrigatório'],
     }),
     props: {
         open: { type: Boolean, default: false },
@@ -58,25 +64,37 @@ export default defineComponent({
             this.$emit('close');
         },
         register() {
-            const formularyIsValid = this.$refs.productFormulary.validate();
-            if (formularyIsValid) {
-                this.newProduct.uid = Helper.generateUid();
-                this.newProduct.createdAt = new Date();
-                this.newProduct.updatedAt = new Date();
+            const formsValidation = this.$refs.productFormulary.validate();
+            formsValidation.then((validation) => {
+                const isValid = validation.valid;
+                if (isValid) {
+                    this.newProduct.uid = Helper.generateUid();
+                    this.newProduct.createdAt = new Date();
+                    this.newProduct.updatedAt = new Date();
 
-                ProductService.save(this.newProduct)
-                    .then(() => {
-                        this.$emit('on-create', this.newProduct);
-                        this.newProduct = {};
-                        this.$toast.success(`Produto Criado com Sucesso!`);
-                    })
-                    .catch((error) => {
-                        if (error && error.massage) {
-                            console.error(error.massage);
-                        }
-                        this.$toast.error(`Erro ao criar o produto!`);
-                    });
-            }
+                    ProductService.save(this.newProduct)
+                        .then(() => {
+                            this.$emit('on-create', this.newProduct);
+                            this.newProduct = {};
+                            this.$toast.success(`Produto Criado com Sucesso!`);
+                        })
+                        .catch((error) => {
+                            if (error && error.massage) {
+                                console.error(error.massage);
+                            }
+                            this.$toast.error(`Erro ao criar o produto!`);
+                        });
+                } else {
+                    this.$toast.warning(`Existem inconsistências! Verifique o formulário!`);
+                }
+            });
+        },
+        reset() {
+            this.$refs.productFormulary.reset();
+            this.newProduct.categories = [];
+            this.$nextTick(() => {
+                this.$refs.productFormulary.resetValidation();
+            });
         },
     },
 });
