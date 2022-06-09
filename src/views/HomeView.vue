@@ -2,8 +2,7 @@
     <v-container>
         <div class="text-h5 mt-12 mb-12">Olá, mesa {{ tableId }}</div>
         <v-row :key="option.path" class="mt-12">
-            <!-- <div class="text-h8 text-center" v-if="!createOrder">{{ errorMessages }}</div> -->
-            <NavigationButton :properties="option" :disabled="createOrder"></NavigationButton>
+            <NavigationButton :properties="option" :disabled="hasOrder"></NavigationButton>
         </v-row>
         <v-row>
             <CardSubmit :properties="cardSubmit"></CardSubmit>
@@ -20,12 +19,11 @@ export default defineComponent({
     name: 'HomeView',
 
     mounted() {
-        this.createOrder = this.validateOpenOrder();
+        this.hasOrder = this.hasOpenedOrder();
     },
 
     data: () => ({
-        createOrder: true,
-        errorMessage: 'Já existe um pedido Aberto para esta mesa!',
+        hasOrder: false,
         option: {
             title: 'Novo Pedido',
             path: '/pedido',
@@ -54,12 +52,9 @@ export default defineComponent({
     },
 
     methods: {
-        validateOpenOrder() {
-            if (sessionStorage.getItem('order')) {
-                this.errorMessages = 'Já existe um pedido em Aberto!';
-                return false;
-            }
-            return true;
+        hasOpenedOrder() {
+            console.log(sessionStorage.getItem('order'));
+            return sessionStorage.getItem('order') !== null;
         },
     },
 
