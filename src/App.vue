@@ -32,7 +32,7 @@ export default {
         isDesktop: false,
         options: [
             { name: 'Home', icon: 'mdi-home', path: '/' },
-            { name: 'Pedido Aberto', icon: 'mdi-pencil', path: '/pedido' },
+            { name: 'Pedido', icon: 'mdi-pencil', path: '/pedido' },
             { name: 'Pedidos', icon: 'mdi-format-list-bulleted', path: '/pedidos' },
             { name: 'Produtos', icon: 'mdi-cart', path: '/produtos' },
         ],

@@ -1,10 +1,10 @@
 <template>
-    <v-tabs v-model="tab" class="my-12" fixed-tabs>
+    <v-tabs v-model="selectedCategory" class="my-12" fixed-tabs>
         <v-tab v-for="category in categories" :key="category" :value="category" class="mx-8">{{ category }} </v-tab>
     </v-tabs>
-    <v-window v-model="tab" height="500px">
+    <v-window v-model="selectedCategory">
         <v-window-item v-for="category in categories" :key="category" :value="category">
-            <v-list v-for="product in filteredItens(category)" :key="product.getUid" :text="product.getName">
+            <v-list v-for="product in filteredItens(selectedCategory)" :key="product.uid" :text="product.name">
                 <v-card class="mx-auto my-4 d-flex flex-no-wrap">
                     <v-img :src="product.image" height="180px" cover></v-img>
                     <v-col class="d-flex flex-column justify-center">
@@ -38,19 +38,20 @@ import FirestoreUtils from '../utils/firestore.util';
 import _ from 'lodash';
 
 export default defineComponent({
-    name: 'ProductList',
+    name: 'OrderTyping',
     async mounted() {
         this.products = await ProductService.getAll();
         this.categories = CategorieService.defaults();
-        this.order = this.getOrder();
-        this.items = this.getItems();
+    },
+    created() {
+        this.order = this.loadOrder();
     },
     data: () => ({
-        tab: 'Geral',
-        order: {},
+        order: undefined,
         products: [],
         categories: [],
         items: [],
+        selectedCategory: 'Geral',
         item: {
             product: {},
             quantity: 0,
@@ -66,29 +67,28 @@ export default defineComponent({
             this.item.product = newItem;
         },
         incrementItem(product) {
-            const item = this.items.find((item) => item.product.uid === product.uid);
+            const item = this.order.items.find((item) => item.product.uid === product.uid);
             if (item) {
-                this.items.indexOf(item).quantity++;
+                this.order.items.indexOf(item).quantity++;
             } else {
-                this.items.push({
+                this.order.items.push({
                     product,
                     quantity: 1,
                 });
                 this.$toast.success(`Produto Adicionado ao carrinho!`);
             }
-            console.log(this.items);
+            console.log(this.order.items);
         },
         decrementItem(product) {
-            const item = this.items.find((item) => item.product.uid === product.uid);
+            const item = this.order.items.find((item) => item.product.uid === product.uid);
             if (item) {
                 if (item.quantity > 1) {
-                    this.items.indexOf(item).quantity--;
+                    this.order.items.indexOf(item).quantity--;
                 } else {
-                    this.items.splice(this.items.indexOf(item), 1);
+                    this.order.items.splice(this.order.items.indexOf(item), 1);
                     this.$toast.success(`Produto Removido do carrinho!`);
                 }
             }
-            console.log(this.items);
         },
         filteredItens(category) {
             if (category == 'Geral') return this.products;
@@ -98,17 +98,17 @@ export default defineComponent({
             });
         },
         getQuantity(product) {
-            if (this.items) {
-                const item = this.items.find((item) => item.product.uid === product.uid);
+            if (this.order.items) {
+                const item = this.order.items.find((item) => item.product.uid === product.uid);
                 if (item) {
-                    return this.items.indexOf(item).quantity;
+                    return this.order.items.indexOf(item).quantity;
                 }
             } else {
                 return 0;
             }
         },
         addCart(item) {
-            this.items.push(item);
+            this.order.items.push(item);
             this.item = {
                 product: {},
                 quantity: 0,
@@ -117,7 +117,7 @@ export default defineComponent({
             this.$toast.success(`Item adicionado ao carrinho!`);
         },
         removeCart(item) {
-            this.items.push(item);
+            this.order.items.push(item);
             this.item = {
                 product: {},
                 quantity: 0,
@@ -128,7 +128,7 @@ export default defineComponent({
         sendOrder() {
             if (sessionStorage.getItem('order')) {
                 let oldOrder = JSON.parse(sessionStorage.getItem('order'));
-                oldOrder.items = this.items;
+                oldOrder.items = this.order.items;
 
                 OrderService.save(oldOrder).then(() => {
                     this.$toast.success(`Pedido Atualizado com sucesso!`);
@@ -138,8 +138,8 @@ export default defineComponent({
                 sessionStorage.setItem('order', JSON.stringify(oldOrder));
             } else {
                 const order = _.extend(FirestoreUtils.getBaseInfo(), {
-                    items: this.items,
-                    totalAmount: this.items.reduce((sum, item) => {
+                    items: this.order.items,
+                    totalAmount: this.order.items.reduce((sum, item) => {
                         return sum + item.product.price * item.quantity;
                     }, 0),
                     paid: false,
@@ -151,11 +151,14 @@ export default defineComponent({
                 sessionStorage.setItem('order', JSON.stringify(order));
             }
         },
-        getOrder() {
-            if (sessionStorage.getItem('order')) {
-                return JSON.parse(sessionStorage.getItem('order'));
+        loadOrder() {
+            const orderFromSession = JSON.parse(sessionStorage.getItem('order'));
+            if (orderFromSession) {
+                return orderFromSession;
             } else {
-                return {};
+                const order = OrderService.createNewOrder();
+                sessionStorage.setItem('order', JSON.stringify(order));
+                return order;
             }
         },
         getItems() {
