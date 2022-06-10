@@ -27,6 +27,7 @@
             </v-list>
         </v-window-item>
     </v-window>
+    <Dialog :props="orderConfirmationDialog"></Dialog>
     <v-btn class="my-12" color="#009688" block @click="sendOrder()"> Confirmar Pedido </v-btn>
 </template>
 <script>
@@ -36,6 +37,7 @@ import ProductService from '@/services/product.service';
 import OrderService from '../services/order.service';
 import FirestoreUtils from '../utils/firestore.util';
 import _ from 'lodash';
+import DialogVue from '../components/cards/Dialog.vue';
 
 export default defineComponent({
     name: 'OrderTyping',
@@ -47,11 +49,15 @@ export default defineComponent({
         this.order = this.loadOrder();
     },
     data: () => ({
+        showDialog: true,
         order: undefined,
         products: [],
         categories: [],
         items: [],
         selectedCategory: 'Geral',
+        orderConfirmationDialog: {
+            title: 'tese',
+        },
         item: {
             product: {},
             quantity: 0,
@@ -168,6 +174,9 @@ export default defineComponent({
                 return [];
             }
         },
+    },
+    components: {
+        DialogVue,
     },
 });
 </script>
