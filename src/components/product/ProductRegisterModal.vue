@@ -18,7 +18,16 @@
                             <v-text-field label="Preço" type="number" v-model="newProduct.price" :rules="priceRules" required></v-text-field>
                         </v-col>
                         <v-col cols="12">
-                            <v-select label="Categoria" v-model="newProduct.categories" :rules="categoryRules" :items="availableCategories" multiple outlined dense required ref="categorys"></v-select>
+                            <v-select
+                                label="Categoria"
+                                v-model="newProduct.categories"
+                                :rules="categoryRules"
+                                :items="availableCategories"
+                                multiple
+                                outlined
+                                dense
+                                required
+                            ></v-select>
                         </v-col>
                         <v-col>
                             <v-textarea label="Descrição" rows="2" v-model="newProduct.description" :rules="descriptionRules" required></v-textarea>
@@ -41,6 +50,7 @@ import { defineComponent } from 'vue';
 import ProductService from '@/services/product.service';
 import CategorieService from '../../services/categorie.service';
 import Helper from '@/utils/helper';
+import FormularyUtils from '@/utils/formulary.util';
 
 export default defineComponent({
     mounted() {
@@ -48,13 +58,13 @@ export default defineComponent({
     },
     name: 'ProductRegisterModal',
     data: () => ({
-        valid: true,
+        valid: false,
         newProduct: {},
         availableCategories: [],
-        nameRules: [(name) => !!name || 'Nome é obrigatório'],
-        priceRules: [(preco) => !!preco || 'Preço é obrigatório'],
-        categoryRules: [(category) => !!category || 'Categoria é obrigatório'],
-        descriptionRules: [(description) => !!description || 'Descrição é obrigatório'],
+        nameRules: [FormularyUtils.validateIsNotNull('Nome é obrigatório')],
+        priceRules: [FormularyUtils.validateIsNotNull('Preço é obrigatório')],
+        categoryRules: [FormularyUtils.validateIsNotNull('Categoria é obrigatório')],
+        descriptionRules: [FormularyUtils.validateIsNotNull('Descrição é obrigatório')],
     }),
     props: {
         open: { type: Boolean, default: false },
