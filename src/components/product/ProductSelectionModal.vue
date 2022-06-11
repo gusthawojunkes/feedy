@@ -54,16 +54,13 @@ export default defineComponent({
             }
         },
         addItem() {
-            if (!this.productSelection.item || this.productSelection.item.quantity === 0) {
-                this.close();
-                console.log('Não foi possível adicionar o item');
-                return;
+            if (this.productSelection.item && this.productSelection.item.quantity !== 0) {
+                this.$emit('on-add-item', {
+                    product: this.productSelection.item.product,
+                    quantity: this.productSelection.item.quantity,
+                });
             }
-            console.log('adicionou item');
-            this.$emit('on-add-item', {
-                product: this.productSelection.item.product,
-                quantity: this.productSelection.item.quantity,
-            });
+            this.close();
         },
         close() {
             this.$emit('close');

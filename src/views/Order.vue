@@ -17,12 +17,8 @@
                         <v-btn class="mx-2" fab dark @click="openProductSelection(product)">
                             <v-icon dark>mdi-plus</v-icon>
                         </v-btn>
-
-                        <ProductSelectionModal
-                            :productSelection="selectionProductDialog"
-                            @close="selectionProductDialog.dialog = false"
-                            @on-add-item="addItemOnOder($event)"
-                        ></ProductSelectionModal>
+                        <ProductSelectionModal :productSelection="selectionProductDialog" @close="selectionProductDialog.dialog = false" @on-add-item="addItemOnOder($event)">
+                        </ProductSelectionModal>
                     </div>
                 </v-card>
             </v-list>
@@ -36,7 +32,6 @@ import ProductSelectionModal from '@/components/product/ProductSelectionModal.vu
 import CategorieService from '@/services/categorie.service';
 import ProductService from '@/services/product.service';
 import OrderService from '../services/order.service';
-import FirestoreUtils from '../utils/firestore.util';
 import _ from 'lodash';
 
 export default defineComponent({
@@ -69,13 +64,14 @@ export default defineComponent({
             immediate: true,
             handler(to) {
                 const category = to;
-                this.filteredProducts = this.filteredItens(category);
+                this.filteredProducts = this.filterProductsByCategory(category);
             },
         },
     },
     methods: {
         addItemOnOder(item) {
             this.order.items.push(item);
+            this.$toast.success(`${item.product.name} adicionado ao pedido!`);
         },
         openProductSelection(product) {
             if (!product) {
@@ -83,11 +79,10 @@ export default defineComponent({
                 return;
             }
             const { uid } = product;
-            console.log(uid);
             const productIndex = _.findIndex(this.order.items, (item) => {
-                item.product.uid === uid;
+                return item.product.uid === uid;
             });
-            if (productIndex != -1) {
+            if (productIndex !== -1) {
                 const item = this.order.items[productIndex];
                 this.selectionProductDialog.item = item;
             } else {
@@ -96,93 +91,53 @@ export default defineComponent({
                     quantity: 0,
                 };
             }
-            console.log(this.selectionProductDialog);
             this.selectionProductDialog.dialog = true;
         },
-        openItemModal(newItem) {
-            this.item.product = newItem;
-        },
-        incrementItem(product) {
-            const item = this.order.items.find((item) => item.product.uid === product.uid);
-            if (item) {
-                this.order.items.indexOf(item).quantity++;
-            } else {
-                this.order.items.push({
-                    product,
-                    quantity: 1,
-                });
-                this.$toast.success(`Produto Adicionado ao carrinho!`);
-            }
-            console.log(this.order.items);
-        },
-        decrementItem(product) {
-            const item = this.order.items.find((item) => item.product.uid === product.uid);
-            if (item) {
-                if (item.quantity > 1) {
-                    this.order.items.indexOf(item).quantity--;
-                } else {
-                    this.order.items.splice(this.order.items.indexOf(item), 1);
-                    this.$toast.success(`Produto Removido do carrinho!`);
-                }
-            }
-        },
-        filteredItens(category) {
+        filterProductsByCategory(category) {
             if (!category || category == 'Geral') return this.products;
 
             return this.products.filter((product) => {
                 return product.categories.includes(category);
             });
         },
-        addCart(item) {
-            this.order.items.push(item);
-            this.item = {
-                product: {},
-                quantity: 0,
-            };
-            this.$toast.success(`Item adicionado ao carrinho!`);
+        async saveOrder() {
+            this.validateOrderOrThrowException();
+            const order = OrderService.prepare(this.order);
+            sessionStorage.setItem('order', JSON.stringify(order));
+            OrderService.save(order).then(() => {
+                this.$toast.success('Pedido salvo com sucesso!');
+            });
         },
-        removeCart(item) {
-            this.order.items.push(item);
-            this.item = {
-                product: {},
-                quantity: 0,
-            };
-            this.$toast.success(`Item removido do carrinho!`);
-        },
+
         sendOrder() {
-            if (sessionStorage.getItem('order')) {
-                let oldOrder = JSON.parse(sessionStorage.getItem('order'));
-                oldOrder.items = this.order.items;
-
-                OrderService.save(oldOrder).then(() => {
-                    this.$toast.success('Pedido Atualizado com sucesso!');
+            this.saveOrder()
+                .then(() => {
                     this.$router.push('/pedidos');
+                    // open modal...
+                })
+                .catch((error) => {
+                    this.$toast.error(error);
                 });
-
-                sessionStorage.setItem('order', JSON.stringify(oldOrder));
-            } else {
-                const order = _.extend(FirestoreUtils.getBaseInfo(), {
-                    items: this.order.items,
-                    totalAmount: this.order.items.reduce((sum, item) => {
-                        return sum + item.product.price * item.quantity;
-                    }, 0),
-                    paid: false,
-                });
-                OrderService.save(order).then(() => {
-                    this.$toast.success(`Pedido Criado com sucesso!`);
-                    this.$router.push('/pedidos');
-                });
-                sessionStorage.setItem('order', JSON.stringify(order));
-            }
         },
+
         loadOrder() {
             const orderFromSession = JSON.parse(sessionStorage.getItem('order'));
-            if (orderFromSession) {
+            if (this.order === undefined && orderFromSession) {
                 return orderFromSession;
             } else {
                 const order = OrderService.createNewOrder();
                 sessionStorage.setItem('order', JSON.stringify(order));
                 return order;
+            }
+        },
+
+        validateOrderOrThrowException() {
+            if (this.order === undefined || this.order === null) {
+                throw 'Ocorreu um erro ao tentar salvar o pedido, contate os responsáveis no estabelecimento.';
+            }
+
+            if (!this.order.items.length || this.order.items.length === 0) {
+                throw 'Adicione pelo menos um item no pedido antes de enviá-lo.';
             }
         },
     },
