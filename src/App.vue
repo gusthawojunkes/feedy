@@ -2,14 +2,9 @@
     <v-app>
         <AppBar :options="options" v-if="isDesktop" />
         <v-main>
-            <div v-if="isDesktop">
-                <v-container>
-                    <router-view />
-                </v-container>
-            </div>
-            <div v-else>
+            <v-container>
                 <router-view />
-            </div>
+            </v-container>
         </v-main>
         <BottomNavigation :options="options" v-if="!isDesktop" />
     </v-app>
@@ -26,6 +21,7 @@ export default {
     name: 'App',
     mounted() {
         this.isDesktop = Helper.isDesktop();
+        console.log(this.isDesktop);
     },
 
     data: () => ({

@@ -1,29 +1,26 @@
 <template>
-    <v-tabs v-model="selectedCategory" class="my-12" fixed-tabs>
+    <v-tabs v-model="selectedCategoryIndex" class="my-12" fixed-tabs>
         <v-tab v-for="category in categories" :key="category" class="mx-8">{{ category }} </v-tab>
     </v-tabs>
-    <v-window v-model="selectedCategory">
-        <v-window-item :value="selectedCategory">
-            <v-list v-for="product in filteredProducts" :key="product.uid" :text="product.name">
-                <v-card class="mx-auto my-4 d-flex flex-no-wrap">
-                    <v-img :src="product.image" height="180px" cover></v-img>
-                    <v-col class="d-flex flex-column justify-center">
-                        <v-card-title>{{ product.name }} </v-card-title>
-                        <div>
-                            <v-card-subtitle> R$ {{ product.price }} </v-card-subtitle>
-                        </div>
-                    </v-col>
-                    <div class="d-flex flex-column justify-center mr-4">
-                        <v-btn class="mx-2" fab dark @click="openProductSelection(product)">
-                            <v-icon dark>mdi-plus</v-icon>
-                        </v-btn>
-                        <ProductSelectionModal :productSelection="selectionProductDialog" @close="selectionProductDialog.dialog = false" @on-add-item="addItemOnOder($event)">
-                        </ProductSelectionModal>
-                    </div>
-                </v-card>
-            </v-list>
-        </v-window-item>
-    </v-window>
+    <v-progress-circular indeterminate color="red"></v-progress-circular>
+    <v-list v-for="product in filteredProducts" :key="product.uid">
+        <v-card class="mx-auto my-4 d-flex flex-no-wrap">
+            <v-img :src="product.image" height="180px" cover></v-img>
+            <v-col class="d-flex flex-column justify-center">
+                <v-card-title>{{ product.name }} </v-card-title>
+                <div>
+                    <v-card-subtitle> R$ {{ product.price }} </v-card-subtitle>
+                </div>
+            </v-col>
+            <div class="d-flex flex-column justify-center mr-4">
+                <v-btn class="mx-2" fab dark @click="openProductSelection(product)">
+                    <v-icon dark>mdi-plus</v-icon>
+                </v-btn>
+                <ProductSelectionModal :productSelection="selectionProductDialog" @close="selectionProductDialog.dialog = false" @on-add-item="addItemOnOder($event)">
+                </ProductSelectionModal>
+            </div>
+        </v-card>
+    </v-list>
     <v-btn class="my-12" color="#009688" block @click="sendOrder()"> Confirmar Pedido </v-btn>
 </template>
 <script>
@@ -38,6 +35,7 @@ export default defineComponent({
     name: 'OrderTyping',
     async mounted() {
         this.products = await ProductService.getAll();
+        this.filteredProducts = this.filterProductsByCategory();
         this.categories = CategorieService.defaults();
     },
     created() {
@@ -47,23 +45,24 @@ export default defineComponent({
         order: undefined,
         products: [],
         filteredProducts: [],
+        loadingProducts: false,
         selectionProductDialog: {
             dialog: false,
             product: undefined,
         },
         categories: [],
-        items: [],
-        selectedCategory: 'Geral',
+        selectedCategoryIndex: 0,
         orderConfirmation: {
             title: 'Deseja confirmar o Pedido?',
             model: true,
         },
     }),
     watch: {
-        selectedCategory: {
+        selectedCategoryIndex: {
             immediate: true,
             handler(to) {
-                const category = to;
+                const category = this.categories[to];
+                console.log(category);
                 this.filteredProducts = this.filterProductsByCategory(category);
             },
         },
@@ -93,8 +92,8 @@ export default defineComponent({
             }
             this.selectionProductDialog.dialog = true;
         },
-        filterProductsByCategory(category) {
-            if (!category || category == 'Geral') return this.products;
+        filterProductsByCategory(category = 'Geral') {
+            if (category == 'Geral') return this.products;
 
             return this.products.filter((product) => {
                 return product.categories.includes(category);
