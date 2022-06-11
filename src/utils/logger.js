@@ -6,8 +6,8 @@ export default class Logger {
     static info(message) {
         const formattedDate = dayjs().format('DD/MM/YYYY HH:mm:ss');
         const formatedMessage = `[INFO - ${formattedDate}]: ${message}`;
-        // const logDocument = this.generateLogDocument(message, 'info');
-        // LogService.register(logDocument);
+        const logDocument = this.generateLogDocument(message, 'info');
+        LogService.register(logDocument);
         console.log(formatedMessage);
     }
     static warning(message) {
