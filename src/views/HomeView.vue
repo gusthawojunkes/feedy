@@ -53,7 +53,6 @@ export default defineComponent({
 
     methods: {
         hasOpenedOrder() {
-            console.log(sessionStorage.getItem('order'));
             return sessionStorage.getItem('order') !== null;
         },
     },
