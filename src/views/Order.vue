@@ -62,7 +62,6 @@ export default defineComponent({
             immediate: true,
             handler(to) {
                 const category = this.categories[to];
-                console.log(category);
                 this.filteredProducts = this.filterProductsByCategory(category);
             },
         },

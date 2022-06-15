@@ -21,7 +21,6 @@ export default {
     name: 'App',
     mounted() {
         this.isDesktop = Helper.isDesktop();
-        console.log(this.isDesktop);
     },
 
     data: () => ({
