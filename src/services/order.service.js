@@ -1,5 +1,4 @@
 import Firestore from './firestore.service';
-import { query, where, getDocs } from 'firebase/firestore';
 import FirestoreUtils from '../utils/firestore.util';
 import _ from 'lodash';
 
@@ -10,12 +9,6 @@ export default class OrderService {
 
     static async save(order) {
         return await Firestore.save('orders', order);
-    }
-
-    static async getAllByTable(number) {
-        const collection = await Firestore.getCollection(Firestore.getInstance(), 'orders');
-        const customQuery = query(collection, where('tableNumber', '==', number));
-        return await getDocs(customQuery);
     }
 
     static createNewOrder() {
@@ -64,5 +57,13 @@ export default class OrderService {
 
     static async send(order) {
         console.log(order);
+    }
+
+    static async getAllByTable(number) {
+        return await Firestore.doQuery('orders', {
+            field: 'tableNumber',
+            operator: '==',
+            value: number,
+        });
     }
 }

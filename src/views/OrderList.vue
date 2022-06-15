@@ -1,7 +1,10 @@
 <template>
     <v-container>
         <div class="text-h5 mt-5 mb-12">Histórico de Pedidos</div>
-        <div v-for="(order, index) in this.orders" :key="order.uid">
+        <div v-if="orders.length <= 0">
+            <v-alert prominent type="warning" variant="outlined"> Essa mesa não possui nenhum pedido ainda </v-alert>
+        </div>
+        <div v-else v-for="(order, index) in this.orders" :key="order.uid">
             <OrderDetail :order="order" :number="this.orders.length - index"></OrderDetail>
         </div>
     </v-container>
@@ -26,9 +29,12 @@ export default defineComponent({
 
     methods: {
         async updateOrders() {
-            const tableNumber = sessionStorage.getItem('table');
-            this.orders = await OrderService.getAllByTable(tableNumber);
-            this.orders = _.sortBy(this.orders, 'createdAt').reverse();
+            let tableNumber = sessionStorage.getItem('table');
+            if (tableNumber) {
+                this.orders = await OrderService.getAllByTable(parseInt(tableNumber));
+                debugger;
+                this.orders = _.sortBy(this.orders, 'createdAt').reverse();
+            }
         },
     },
 

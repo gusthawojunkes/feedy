@@ -1,4 +1,4 @@
-import { getFirestore, collection, doc, setDoc, deleteDoc, getDocs, updateDoc, getDoc } from 'firebase/firestore';
+import { getFirestore, collection, doc, setDoc, deleteDoc, getDocs, updateDoc, getDoc, query, where } from 'firebase/firestore';
 import Helper from '@/utils/helper';
 import Logger from '@/utils/logger';
 
@@ -106,5 +106,33 @@ export default class Firestore {
                 reject();
             }
         });
+    }
+
+    static async createQuery(collectionName, params) {
+        const database = this.getInstance();
+        const collection = await this.getCollection(database, collectionName);
+        return query(collection, where(params.field, params.operator, params.value));
+    }
+
+    static async executeQuery(query) {
+        const documents = [];
+        const snapshots = await getDocs(query);
+        return new Promise((resolve, reject) => {
+            try {
+                snapshots.forEach((snapshot) => {
+                    documents.push(snapshot.data());
+                });
+                resolve(documents);
+            } catch (error) {
+                Helper.handleError(error);
+                reject([]);
+            }
+        });
+    }
+
+    static async doQuery(collectionName, params) {
+        debugger;
+        const query = await this.createQuery(collectionName, params);
+        return await this.executeQuery(query);
     }
 }
