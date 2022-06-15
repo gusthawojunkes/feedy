@@ -1,4 +1,5 @@
 <template>
+<<<<<<< Updated upstream
     <v-tabs v-model="selectedCategoryIndex" class="my-12" fixed-tabs>
         <v-tab v-for="category in categories" :key="category" class="mx-8">{{ category }} </v-tab>
     </v-tabs>
@@ -22,6 +23,40 @@
         </v-card>
     </v-list>
     <v-btn class="my-12" color="#009688" block @click="sendOrder()"> Confirmar Pedido </v-btn>
+=======
+    <div v-if="products.length < 0"><span>Não existem produtos cadastrados</span></div>
+    <div v-else>
+        <v-tabs v-model="selectedCategory" class="my-12" fixed-tabs>
+            <v-tab v-for="category in categories" :key="category" :value="category" class="mx-8">{{ category }} </v-tab>
+        </v-tabs>
+        <v-window v-model="selectedCategory">
+            <v-window-item v-for="category in categories" :key="category" :value="category">
+                <v-list v-for="product in filteredItens(selectedCategory)" :key="product.uid" :text="product.name">
+                    <v-card class="mx-auto my-4 d-flex flex-no-wrap">
+                        <v-img :src="product.image" height="180px" cover></v-img>
+                        <v-col class="d-flex flex-column justify-center">
+                            <v-card-title>{{ product.name }} </v-card-title>
+                            <div>
+                                <v-card-subtitle> R$ {{ product.price }} </v-card-subtitle>
+                                <v-chip class="ma-3" size="x-small" color="green" v-if="getQuantity(product)"> Adicionado ao Pedido </v-chip>
+                            </div>
+                        </v-col>
+                        <div class="d-flex flex-column justify-center mr-4">
+                            <v-btn variant="outline" @click="incrementItem(product)">
+                                <v-icon dark>mdi-plus</v-icon>
+                            </v-btn>
+                            <div class="mx-8 my-4">{{ getQuantity(product) }}</div>
+                            <v-btn variant="outline" @click="decrementItem(product)">
+                                <v-icon dark>mdi-minus</v-icon>
+                            </v-btn>
+                        </div>
+                    </v-card>
+                </v-list>
+            </v-window-item>
+        </v-window>
+        <v-btn class="my-12" color="#009688" block @click="sendOrder()"> Confirmar Pedido </v-btn>
+    </div>
+>>>>>>> Stashed changes
 </template>
 <script>
 import { defineComponent } from 'vue';
@@ -35,7 +70,11 @@ export default defineComponent({
     name: 'OrderTyping',
     async mounted() {
         this.products = await ProductService.getAll();
+<<<<<<< Updated upstream
         this.filteredProducts = this.filterProductsByCategory();
+=======
+        console.log(this.products);
+>>>>>>> Stashed changes
         this.categories = CategorieService.defaults();
     },
     created() {
@@ -77,6 +116,7 @@ export default defineComponent({
                 this.$toast.error('Ocorreu um erro ao tentar selecionar o produto, contate os responsáveis no estabelecimento.');
                 return;
             }
+<<<<<<< Updated upstream
             const { uid } = product;
             const productIndex = _.findIndex(this.order.items, (item) => {
                 return item.product.uid === uid;
@@ -89,6 +129,18 @@ export default defineComponent({
                     product: product,
                     quantity: 0,
                 };
+=======
+        },
+        decrementItem(product) {
+            const item = this.order.items.find((item) => item.product.uid === product.uid);
+            if (item) {
+                if (item.quantity > 1) {
+                    this.order.items.indexOf(item).quantity--;
+                } else {
+                    this.order.items.splice(this.order.items.indexOf(item), 1);
+                    this.$toast.success(`Produto Removido do carrinho!`);
+                }
+>>>>>>> Stashed changes
             }
             this.selectionProductDialog.dialog = true;
         },
