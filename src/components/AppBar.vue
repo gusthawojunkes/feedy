@@ -1,7 +1,7 @@
 <template>
     <v-navigation-drawer expand-on-hover rail>
         <v-list>
-            <v-img :src="LogoFeedy"></v-img>
+            <v-img :src="logo"></v-img>
         </v-list>
 
         <v-divider></v-divider>
@@ -14,13 +14,13 @@
 
 <script>
 import { defineComponent } from 'vue';
-import LogoFeedy from '@/assets/LogoFeedy.png';
+import logo from '@/assets/logo.png';
 
 export default defineComponent({
     name: 'AppBar',
 
     data: () => ({
-        LogoFeedy: LogoFeedy,
+        logo: logo,
     }),
 
     props: {
