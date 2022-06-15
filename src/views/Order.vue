@@ -2,7 +2,6 @@
     <v-tabs v-model="selectedCategoryIndex" class="my-12" fixed-tabs>
         <v-tab v-for="category in categories" :key="category" class="mx-8">{{ category }} </v-tab>
     </v-tabs>
-    <v-progress-circular indeterminate color="red"></v-progress-circular>
     <v-list v-for="product in filteredProducts" :key="product.uid">
         <v-card class="mx-auto my-4 d-flex flex-no-wrap">
             <v-img :src="product.image" height="180px" cover></v-img>
