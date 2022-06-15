@@ -1,22 +1,19 @@
 <template>
     <v-app>
+        <AppBar :options="options" v-if="isDesktop" />
         <v-main>
-            <div v-if="isDesktop">
-                <v-container>
-                    <router-view />
-                </v-container>
-            </div>
-            <div v-else>
+            <v-container>
                 <router-view />
-            </div>
+            </v-container>
         </v-main>
-        <BottomNavigationVue />
+        <BottomNavigation :options="options" v-if="!isDesktop" />
     </v-app>
 </template>
 
 <script>
 import Helper from '@/utils/helper';
-import BottomNavigationVue from '@/components/BottomNavigation.vue';
+import AppBar from './components/AppBar.vue';
+import BottomNavigation from './components/BottomNavigation.vue';
 
 const APPLICATION_NAME = 'Feedy';
 
@@ -28,6 +25,12 @@ export default {
 
     data: () => ({
         isDesktop: false,
+        options: [
+            { name: 'Home', icon: 'mdi-home', path: '/' },
+            { name: 'Pedido', icon: 'mdi-pencil', path: '/pedido' },
+            { name: 'Pedidos', icon: 'mdi-format-list-bulleted', path: '/pedidos' },
+            { name: 'Produtos', icon: 'mdi-cart', path: '/produtos' },
+        ],
     }),
 
     watch: {
@@ -39,7 +42,20 @@ export default {
         },
     },
     components: {
-        BottomNavigationVue,
+        AppBar,
+        BottomNavigation,
     },
 };
 </script>
+
+<style>
+.v-main {
+    width: 800px;
+    margin: 0 auto;
+}
+
+.v-btn,
+.v-tabs {
+    color: #009688;
+}
+</style>

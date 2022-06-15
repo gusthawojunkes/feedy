@@ -1,8 +1,8 @@
 <template>
     <v-container>
-        <div class="text-h5 mt-5 mb-12">Olá, mesa {{ tableId }}</div>
-        <v-row v-for="option in pathOptions" :key="option.path">
-            <NavigationButton :properties="option"> </NavigationButton>
+        <div class="text-h5 mt-12 mb-12">Olá, mesa {{ tableId }}</div>
+        <v-row :key="option.path" class="mt-12">
+            <NavigationButton :properties="option" :disabled="hasOrder"></NavigationButton>
         </v-row>
         <v-row>
             <CardSubmit :properties="cardSubmit"></CardSubmit>
@@ -18,17 +18,17 @@ import TableService from '../services/table.service';
 
 export default defineComponent({
     name: 'HomeView',
+
+    mounted() {
+        this.hasOrder = this.hasOpenedOrder();
+    },
+
     data: () => ({
-        pathOptions: [
-            {
-                title: 'Novo Pedido',
-                path: '/pedido',
-            },
-            {
-                title: 'Central de Ajuda',
-                path: '/central-ajuda',
-            },
-        ],
+        hasOrder: false,
+        option: {
+            title: 'Novo Pedido',
+            path: '/pedido',
+        },
         cardSubmit: {
             helpTitle: 'Quero ser atendido',
             finishingTitle: 'Você logo será atendido!',
@@ -56,6 +56,10 @@ export default defineComponent({
     methods: {
         async validateTable() {
             TableService.getByNumber(this.tableId).then((response) => console.log(response));
+        },
+
+        hasOpenedOrder() {
+            return sessionStorage.getItem('order') !== null;
         },
     },
 

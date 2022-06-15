@@ -1,145 +1,145 @@
 <template>
-    <v-tabs v-model="tab" class="mb-5">
-        <v-tab v-for="category in categories" :key="category" :value="category">{{ category }} </v-tab>
+    <v-tabs v-model="selectedCategoryIndex" class="my-12" fixed-tabs>
+        <v-tab v-for="category in categories" :key="category" class="mx-8">{{ category }} </v-tab>
     </v-tabs>
-    <v-window v-model="tab" height="500px">
-        <v-window-item v-for="category in categories" :key="category" :value="category">
-            <v-list v-for="product in filteredItens(category)" :key="product.getUid" :text="product.getName" @click="openItemModal(product)">
-                <v-card class="mx-auto d-flex flex-no-wrap">
-                    <v-img :src="product.image" height="150px" cover></v-img>
-                    <v-col>
-                        <v-card-title> {{ product.name }} </v-card-title>
-                        <v-card-subtitle> R$ {{ product.price }} </v-card-subtitle>
-                    </v-col>
-                </v-card>
-            </v-list>
-        </v-window-item>
-    </v-window>
-    <div class="fill-height my-4">
-        <v-btn block @click="sendOrder()"> Confirmar Pedido </v-btn>
-    </div>
-    <v-dialog v-model="dialog" fullscreen>
-        <v-card>
-            <v-toolbar>
-                <v-btn icon dark @click="dialog = false">
-                    <v-icon>mdi-chevron-left</v-icon>
+    <v-list v-for="product in filteredProducts" :key="product.uid">
+        <v-card class="mx-auto my-4 d-flex flex-no-wrap">
+            <v-img :src="product.image" height="180px" cover></v-img>
+            <v-col class="d-flex flex-column justify-center">
+                <v-card-title>{{ product.name }} </v-card-title>
+                <div>
+                    <v-card-subtitle> R$ {{ product.price }} </v-card-subtitle>
+                </div>
+            </v-col>
+            <div class="d-flex flex-column justify-center mr-4">
+                <v-btn class="mx-2" fab dark @click="openProductSelection(product)">
+                    <v-icon dark>mdi-plus</v-icon>
                 </v-btn>
-                <v-toolbar-title>Voltar</v-toolbar-title>
-                <v-spacer></v-spacer>
-            </v-toolbar>
-            <v-responsive class="overflow-y-auto scroll">
-                <v-lazy
-                    v-model="dialog"
-                    :options="{
-                        threshold: 0.5,
-                    }"
-                    transition="fade-transition"
-                >
-                    <div>
-                        <v-img height="500" :src="item.product.image" cover class="align-end" gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"> </v-img>
-                        <v-list class="mx-3">
-                            <v-card>
-                                <div class="mt-9">
-                                    <v-card-subtitle class="text-1 font-weight-black">{{ item.product.name }}</v-card-subtitle>
-                                    <v-card-title> R$ {{ item.product.price }}</v-card-title>
-                                </div>
-
-                                <v-divider class="mx-4"></v-divider>
-
-                                <v-card-text>
-                                    <div class="mt-4 mb-9">{{ item.product.description }}</div>
-                                </v-card-text>
-                            </v-card>
-                        </v-list>
-                        <div class="d-flex justify-space-between ma-3">
-                            <div>
-                                <v-btn icon dark @click="decrementItem()">
-                                    <v-icon>mdi-minus</v-icon>
-                                </v-btn>
-                                <h1 class="mx-3">{{ this.item.quantity }}</h1>
-                                <v-btn icon dark text @click="incrementItem()">
-                                    <v-icon>mdi-plus</v-icon>
-                                </v-btn>
-                            </div>
-                            <div class="text-center my-1">
-                                <v-btn rounded dark size="large" @click="addCart(item)" :disabled="item.quantity == 0"> Adicionar </v-btn>
-                            </div>
-                        </div>
-                    </div>
-                </v-lazy>
-            </v-responsive>
+                <ProductSelectionModal :productSelection="selectionProductDialog" @close="selectionProductDialog.dialog = false" @on-add-item="addItemOnOder($event)">
+                </ProductSelectionModal>
+            </div>
         </v-card>
-    </v-dialog>
+    </v-list>
+    <v-btn class="my-12" color="#009688" block @click="sendOrder()"> Confirmar Pedido </v-btn>
 </template>
 <script>
 import { defineComponent } from 'vue';
+import ProductSelectionModal from '@/components/product/ProductSelectionModal.vue';
 import CategorieService from '@/services/categorie.service';
 import ProductService from '@/services/product.service';
 import OrderService from '../services/order.service';
-import FirestoreUtils from '../utils/firestore.util';
 import _ from 'lodash';
 
 export default defineComponent({
-    name: 'ProductList',
+    name: 'OrderTyping',
     async mounted() {
         this.products = await ProductService.getAll();
+        this.filteredProducts = this.filterProductsByCategory();
         this.categories = CategorieService.defaults();
-        this.order = {};
+    },
+    created() {
+        this.order = this.loadOrder();
     },
     data: () => ({
-        tab: 'Geral',
-        dialog: false,
-        order: {},
+        order: undefined,
         products: [],
+        filteredProducts: [],
+        loadingProducts: false,
+        selectionProductDialog: {
+            dialog: false,
+            product: undefined,
+        },
         categories: [],
-        items: [],
-        item: {
-            product: {},
-            quantity: 0,
+        selectedCategoryIndex: 0,
+        orderConfirmation: {
+            title: 'Deseja confirmar o Pedido?',
+            model: true,
         },
     }),
+    watch: {
+        selectedCategoryIndex: {
+            immediate: true,
+            handler(to) {
+                const category = this.categories[to];
+                this.filteredProducts = this.filterProductsByCategory(category);
+            },
+        },
+    },
     methods: {
-        openItemModal(newItem) {
-            this.dialog = true;
-            this.item.product = newItem;
+        addItemOnOder(item) {
+            this.order.items.push(item);
+            this.$toast.success(`${item.product.name} adicionado ao pedido!`);
         },
-        incrementItem() {
-            this.item.quantity = this.item.quantity + 1;
+        openProductSelection(product) {
+            if (!product) {
+                this.$toast.error('Ocorreu um erro ao tentar selecionar o produto, contate os responsáveis no estabelecimento.');
+                return;
+            }
+            const { uid } = product;
+            const productIndex = _.findIndex(this.order.items, (item) => {
+                return item.product.uid === uid;
+            });
+            if (productIndex !== -1) {
+                const item = this.order.items[productIndex];
+                this.selectionProductDialog.item = item;
+            } else {
+                this.selectionProductDialog.item = {
+                    product: product,
+                    quantity: 0,
+                };
+            }
+            this.selectionProductDialog.dialog = true;
         },
-        decrementItem() {
-            if (this.item.quantity == 0) return;
-            this.item.quantity = this.item.quantity - 1;
-        },
-        filteredItens(category) {
+        filterProductsByCategory(category = 'Geral') {
             if (category == 'Geral') return this.products;
 
             return this.products.filter((product) => {
                 return product.categories.includes(category);
             });
         },
-        addCart(item) {
-            this.items.push(item);
-            this.item = {
-                product: {},
-                quantity: 0,
-            };
-            this.dialog = false;
-            this.$toast.success(`Item adicionado ao carrinho!`);
-        },
-        sendOrder() {
-            const order = _.extend(FirestoreUtils.getBaseInfo(), {
-                items: this.items,
-                totalAmount: this.items.reduce((sum, item) => {
-                    return sum + item.product.price * item.quantity;
-                }, 0),
-                paid: false,
-                tableNumber: sessionStorage.getItem('table'),
-            });
+        async saveOrder() {
+            this.validateOrderOrThrowException();
+            const order = OrderService.prepare(this.order);
+            sessionStorage.setItem('order', JSON.stringify(order));
             OrderService.save(order).then(() => {
-                this.$toast.success(`Pedido enviado com sucesso!`);
-                this.$router.push('/pedidos');
+                this.$toast.success('Pedido salvo com sucesso!');
             });
         },
+
+        sendOrder() {
+            this.saveOrder()
+                .then(() => {
+                    this.$router.push('/pedidos');
+                    // open modal...
+                })
+                .catch((error) => {
+                    this.$toast.error(error);
+                });
+        },
+
+        loadOrder() {
+            const orderFromSession = JSON.parse(sessionStorage.getItem('order'));
+            if (this.order === undefined && orderFromSession) {
+                return orderFromSession;
+            } else {
+                const order = OrderService.createNewOrder();
+                sessionStorage.setItem('order', JSON.stringify(order));
+                return order;
+            }
+        },
+
+        validateOrderOrThrowException() {
+            if (this.order === undefined || this.order === null) {
+                throw 'Ocorreu um erro ao tentar salvar o pedido, contate os responsáveis no estabelecimento.';
+            }
+
+            if (!this.order.items.length || this.order.items.length === 0) {
+                throw 'Adicione pelo menos um item no pedido antes de enviá-lo.';
+            }
+        },
+    },
+    components: {
+        ProductSelectionModal,
     },
 });
 </script>
