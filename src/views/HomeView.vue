@@ -1,13 +1,11 @@
 <template>
     <v-container>
         <div class="text-h5 mt-12 mb-12">Olá, mesa {{ tableId }}</div>
-        <v-row :key="option.path" class="mt-12">
+        <v-row :key="option.path" class="mt-6">
             <NavigationButton :properties="option" :disabled="hasOrder"></NavigationButton>
         </v-row>
-        <v-row>
+        <v-row class="mt-6">
             <CardSubmit :properties="cardSubmit"></CardSubmit>
-        </v-row>
-        <v-row>
             <FinishAttendanceButton></FinishAttendanceButton>
         </v-row>
     </v-container>
@@ -18,8 +16,8 @@ import { defineComponent } from 'vue';
 import NavigationButton from '@/components/buttons/NavigationButton.vue';
 import CardSubmit from '@/components/cards/CardSubmit.vue';
 import FinishAttendanceButton from '@/components/buttons/FinishAttendanceButton.vue';
-import Helper from '../utils/helper';
-// import TableService from '../services/table.service';
+import Helper from '@/utils/helper';
+import TableService from '@/services/table.service';
 
 export default defineComponent({
     name: 'HomeView',
@@ -53,15 +51,15 @@ export default defineComponent({
                 } else {
                     this.tableId = table;
                 }
-                // this.validateTable();
+                this.validateTable();
             },
         },
     },
 
     methods: {
-        // async validateTable() {
-        //     TableService.getByNumber(this.tableId).then((response) => console.log(response));
-        // },
+        async validateTable() {
+            await TableService.getByNumber(this.tableId);
+        },
 
         hasOpenedOrder() {
             return sessionStorage.getItem('order') !== null;

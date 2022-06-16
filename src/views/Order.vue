@@ -100,6 +100,7 @@ export default defineComponent({
             }
             this.selectionProductDialog.dialog = true;
         },
+
         filterProductsByCategory(category = 'Geral') {
             if (category == 'Geral') return this.products;
 
@@ -107,6 +108,7 @@ export default defineComponent({
                 return product.categories.includes(category);
             });
         },
+
         async saveOrder() {
             this.validateOrderOrThrowException();
             const order = OrderService.prepare(this.order);
@@ -119,11 +121,12 @@ export default defineComponent({
         sendOrder() {
             this.saveOrder()
                 .then(() => {
+                    this.deleteCurrentOrder();
                     this.$router.push('/pedidos');
                     // open modal...
                 })
                 .catch((error) => {
-                    this.$toast.error(error);
+                    this.$toast.error(error.message);
                 });
         },
 
@@ -146,6 +149,11 @@ export default defineComponent({
             if (!this.order.items.length || this.order.items.length === 0) {
                 throw 'Adicione pelo menos um item no pedido antes de enviá-lo.';
             }
+        },
+
+        deleteCurrentOrder() {
+            this.order = undefined;
+            sessionStorage.removeItem('order');
         },
     },
     components: {
