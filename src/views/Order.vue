@@ -20,7 +20,8 @@
             </div>
         </v-card>
     </v-list>
-    <v-btn class="my-12" color="#009688" block @click="sendOrder()"> Confirmar Pedido </v-btn>
+    <v-btn class="my-12" color="#009688" block @click="confirm()"> Confirmar Pedido </v-btn>
+    <Dialog :content="orderConfirmation" @close="actionDialog()" :open="dialogConfirmation"></Dialog>
 </template>
 <script>
 import { defineComponent } from 'vue';
@@ -29,7 +30,7 @@ import CategorieService from '@/services/categorie.service';
 import ProductService from '@/services/product.service';
 import OrderService from '../services/order.service';
 import _ from 'lodash';
-import DialogVue from '../components/cards/Dialog.vue';
+import Dialog from '../components/cards/Dialog.vue';
 
 export default defineComponent({
     name: 'OrderTyping',
@@ -54,9 +55,12 @@ export default defineComponent({
         categories: [],
         selectedCategoryIndex: 0,
         orderConfirmation: {
+            titleButton: 'Salvar Pedido',
             title: 'Deseja confirmar o Pedido?',
-            model: true,
+            description: '',
+            action: false,
         },
+        dialogConfirmation: false,
     }),
     watch: {
         selectedCategoryIndex: {
@@ -139,9 +143,22 @@ export default defineComponent({
                 throw 'Adicione pelo menos um item no pedido antes de enviá-lo.';
             }
         },
+        confirm() {
+            this.dialogConfirmation = true;
+        },
+        actionDialog() {
+            this.dialogConfirmation = false;
+            this.$nextTick(() => {
+                if (this.orderConfirmation.action) {
+                    this.sendOrder();
+                }
+                this.orderConfirmation.action = false;
+            });
+        },
     },
     components: {
         ProductSelectionModal,
+        Dialog,
     },
 });
 </script>
