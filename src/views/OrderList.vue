@@ -15,6 +15,7 @@ import { defineComponent } from 'vue';
 import OrderService from '@/services/order.service';
 import _ from 'lodash';
 import OrderDetail from '@/components/order/OrderDetail.vue';
+import Helper from '../utils/helper';
 
 export default defineComponent({
     name: 'OrdersList',
@@ -29,11 +30,10 @@ export default defineComponent({
 
     methods: {
         async updateOrders() {
-            let tableNumber = sessionStorage.getItem('table');
-            if (tableNumber) {
-                this.orders = await OrderService.getAllByTable(parseInt(tableNumber));
-                debugger;
-                this.orders = _.sortBy(this.orders, 'createdAt').reverse();
+            const tableNumber = Helper.getTableNumber();
+            if (tableNumber != null) {
+                this.orders = await OrderService.getAllByTable(tableNumber);
+                _.sortBy(this.orders, 'createdAt').reverse();
             }
         },
     },

@@ -7,6 +7,9 @@
         <v-row>
             <CardSubmit :properties="cardSubmit"></CardSubmit>
         </v-row>
+        <v-row>
+            <FinishAttendanceButton></FinishAttendanceButton>
+        </v-row>
     </v-container>
 </template>
 
@@ -14,6 +17,8 @@
 import { defineComponent } from 'vue';
 import NavigationButton from '@/components/buttons/NavigationButton.vue';
 import CardSubmit from '@/components/cards/CardSubmit.vue';
+import FinishAttendanceButton from '@/components/buttons/FinishAttendanceButton.vue';
+import Helper from '../utils/helper';
 // import TableService from '../services/table.service';
 
 export default defineComponent({
@@ -40,8 +45,8 @@ export default defineComponent({
         $route: {
             immediate: true,
             handler(to) {
-                const table = sessionStorage.getItem('table');
-                if (!table && to.redirectedFrom) {
+                const table = Helper.getTableNumber();
+                if (table == null && to.redirectedFrom) {
                     const { id } = to.redirectedFrom.params;
                     sessionStorage.setItem('table', id);
                     this.tableId = id;
@@ -66,6 +71,7 @@ export default defineComponent({
     components: {
         NavigationButton,
         CardSubmit,
+        FinishAttendanceButton,
     },
 });
 </script>

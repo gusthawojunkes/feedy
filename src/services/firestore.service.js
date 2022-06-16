@@ -131,7 +131,6 @@ export default class Firestore {
     }
 
     static async doQuery(collectionName, params) {
-        debugger;
         const query = await this.createQuery(collectionName, params);
         return await this.executeQuery(query);
     }
