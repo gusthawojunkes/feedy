@@ -1,5 +1,5 @@
 <template>
-    <div v-if="products.length < 0">
+    <div v-if="!loadingProducts && products.length == 0">
         <v-alert type="warning">Não existem produtos cadastrados.</v-alert>
     </div>
     <div v-else>
@@ -27,7 +27,8 @@
                 </div>
             </v-card>
         </v-list>
-        <v-btn class="my-12" color="#009688" block @click="sendOrder()"> Confirmar Pedido </v-btn>
+        <v-btn class="my-12" color="#009688" block @click="openOrderRevision()"> Confirmar Pedido </v-btn>
+        <OrderConfirmationDialog :dialog="orderConfirmationDialog" @close="orderConfirmationDialog = false" @on-confirm="sendOrder()"></OrderConfirmationDialog>
     </div>
 </template>
 <script>
@@ -35,7 +36,8 @@ import { defineComponent } from 'vue';
 import ProductSelectionModal from '@/components/product/ProductSelectionModal.vue';
 import CategorieService from '@/services/categorie.service';
 import ProductService from '@/services/product.service';
-import OrderService from '../services/order.service';
+import OrderService from '@/services/order.service';
+import OrderConfirmationDialog from '@/components/dialog/OrderConfirmationDialog.vue';
 import _ from 'lodash';
 
 export default defineComponent({
@@ -47,25 +49,25 @@ export default defineComponent({
         this.filteredProducts = this.filterProductsByCategory();
         this.categories = CategorieService.defaults();
     },
+
     created() {
         this.order = this.loadOrder();
     },
+
     data: () => ({
         order: undefined,
         products: [],
         filteredProducts: [],
+        categories: [],
         loadingProducts: false,
+        selectedCategoryIndex: 0,
         selectionProductDialog: {
             dialog: false,
             product: undefined,
         },
-        categories: [],
-        selectedCategoryIndex: 0,
-        orderConfirmation: {
-            title: 'Deseja confirmar o Pedido?',
-            model: true,
-        },
+        orderConfirmationDialog: false,
     }),
+
     watch: {
         selectedCategoryIndex: {
             immediate: true,
@@ -75,6 +77,7 @@ export default defineComponent({
             },
         },
     },
+
     methods: {
         addItemOnOder(item) {
             this.order.items.push(item);
@@ -118,6 +121,15 @@ export default defineComponent({
             });
         },
 
+        openOrderRevision() {
+            if (this.order.items.length == 0) {
+                this.$toast.error('Adicione ao menos um item no pedido antes de finalizar!');
+                return;
+            }
+            console.log('abrindo dialog');
+            this.orderConfirmationDialog = true;
+        },
+
         sendOrder() {
             this.saveOrder()
                 .then(() => {
@@ -158,6 +170,7 @@ export default defineComponent({
     },
     components: {
         ProductSelectionModal,
+        OrderConfirmationDialog,
     },
 });
 </script>
