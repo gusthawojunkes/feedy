@@ -126,7 +126,6 @@ export default defineComponent({
                 this.$toast.error('Adicione ao menos um item no pedido antes de finalizar!');
                 return;
             }
-            console.log('abrindo dialog');
             this.orderConfirmationDialog = true;
         },
 
