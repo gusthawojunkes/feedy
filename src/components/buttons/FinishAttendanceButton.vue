@@ -9,14 +9,14 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
-    <!-- <ConfirmationDialog :properties="confirmDialogProps"></ConfirmationDialog> -->
+    <ConfirmationDialog :properties="confirmDialogProps" @close="closeConfirmationDialog()"></ConfirmationDialog>
 </template>
 
 <script>
 import { defineComponent } from 'vue';
 import TableService from '../../services/table.service';
 import Helper from '../../utils/helper';
-// import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
+import ConfirmationDialog from '@/components/dialog/ConfirmationDialog.vue';
 
 export default defineComponent({
     name: 'FinishAttendanceButton',
@@ -25,14 +25,15 @@ export default defineComponent({
         finishAttendanceDialog: false,
         disabled: false,
         confirmDialogProps: {
-            dialog: false,
+            showDialog: false,
             title: 'Atendimento finalizado com sucesso!',
+            type: 'CONFIRMATION_ONLY',
         },
     }),
 
-    // components: {
-    //     ConfirmationDialog,
-    // },
+    components: {
+        ConfirmationDialog,
+    },
 
     methods: {
         confirmFinishAttendance() {
@@ -40,12 +41,15 @@ export default defineComponent({
             const tableNumber = Helper.getTableNumber();
             TableService.closeTable(tableNumber)
                 .then(() => {
-                    this.confirmDialogProps.dialog = true;
+                    this.confirmDialogProps.showDialog = true;
                     this.disabled = true;
                 })
                 .catch(() => {
                     this.$toast.error('Erro ao finalizar atendimento, contate os reponsáveis do estabelecimento.');
                 });
+        },
+        closeConfirmationDialog() {
+            this.confirmDialogProps.showDialog = false;
         },
     },
 });

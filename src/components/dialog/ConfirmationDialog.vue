@@ -1,9 +1,13 @@
 <template>
-    <v-dialog v-model="dialog">
+    <v-dialog v-model="properties.showDialog">
         <v-card class="px-1 py-12">
             <v-card-title class="text-center"> {{ properties.title }} </v-card-title>
             <v-card-actions>
-                <v-btn @click="close()" block> OK </v-btn>
+                <div v-if="properties.type === 'CONFIRM_OR_CANCEL'">
+                    <v-btn @click="confirm()" block> Confirmar </v-btn>
+                    <v-btn @click="close()" block> Cancelar </v-btn>
+                </div>
+                <v-btn v-else @click="close()" block> OK </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -18,15 +22,12 @@ export default defineComponent({
             default: () => ({}),
         },
     },
-    mounted() {
-        this.dialog = this.properties.showDialog;
-    },
-    data: () => ({
-        dialog: true,
-    }),
     methods: {
         close() {
-            this.dialog = false;
+            this.$emit('close');
+        },
+        confirm() {
+            this.$emit('confirm');
         },
     },
 });
