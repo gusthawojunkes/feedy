@@ -22,7 +22,7 @@ export default class Firebase {
                 if (this.INSTANCE == null) {
                     throw new Error('Firebase instance failed to initialize');
                 }
-                Logger.info('Database connection successfully established');
+                Logger.info('Database connection successfully established', false);
             } catch (error) {
                 let message = 'An error occurred while trying to establish the connection to the database';
                 if (error) {

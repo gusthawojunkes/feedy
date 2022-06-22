@@ -3,25 +3,25 @@ import LogService from '../services/log.service';
 import Helper from '../utils/helper';
 
 export default class Logger {
-    static info(message) {
+    static info(message, save = true) {
         const formattedDate = dayjs().format('DD/MM/YYYY HH:mm:ss');
         const formatedMessage = `[INFO - ${formattedDate}]: ${message}`;
         const logDocument = this.generateLogDocument(message, 'info');
-        LogService.register(logDocument);
+        if (save) LogService.register(logDocument);
         console.log(formatedMessage);
     }
-    static warning(message) {
+    static warning(message, save = true) {
         const formattedDate = dayjs().format('DD/MM/YYYY HH:mm:ss');
         const formatedMessage = `[WARNING - ${formattedDate}]: ${message}`;
         const logDocument = this.generateLogDocument(message, 'warning');
-        LogService.register(logDocument);
+        if (save) LogService.register(logDocument);
         console.warn(formatedMessage);
     }
-    static error(message) {
+    static error(message, save = true) {
         const formattedDate = dayjs().format('DD/MM/YYYY HH:mm:ss');
         const formatedMessage = `[ERROR - ${formattedDate}]: ${message}`;
         const logDocument = this.generateLogDocument(message, 'error');
-        LogService.register(logDocument);
+        if (save) LogService.register(logDocument);
         console.error(formatedMessage);
     }
 
