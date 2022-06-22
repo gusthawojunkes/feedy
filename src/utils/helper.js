@@ -22,4 +22,8 @@ export default class Helper {
     static isDesktop() {
         return !this.isMobile();
     }
+
+    static getTableNumber() {
+        return Number(sessionStorage.getItem('table')) || null;
+    }
 }

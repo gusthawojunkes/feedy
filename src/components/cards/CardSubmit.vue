@@ -14,7 +14,7 @@
         <v-card class="px-1 py-12">
             <v-card-title class="text-center"> {{ properties.finishingTitle }} </v-card-title>
             <v-card-actions>
-                <v-btn @click="openFinishingCard = false" block> Ok </v-btn>
+                <v-btn @click="openFinishingCard = false" block> OK </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -24,7 +24,7 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-    name: 'CardOverlay',
+    name: 'CardSubmit',
 
     props: {
         properties: {

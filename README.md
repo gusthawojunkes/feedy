@@ -61,7 +61,8 @@ npm run lint
     "updatedAt": 1653843842126,
     "totalAmount": 0,
     "items": [],
-    "paid": false
+    "paid": false,
+    "tableNumber": 1
 }
 ```
 
@@ -73,7 +74,7 @@ npm run lint
     "createdAt": 1653843842126,
     "updatedAt": 1653843842126,
     "orderUid": "",
-    "product": undefined,
+    "product": {},
     "quantity": 0,
     "price": 0,
     "coments": ""
@@ -92,6 +93,5 @@ npm run lint
     "openingDate": 1653843842126,
     "closingDate": 1653843842126,
     "status": "",
-    "orders": []
 }
 ```

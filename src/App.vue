@@ -21,6 +21,10 @@ export default {
     name: 'App',
     mounted() {
         this.isDesktop = Helper.isDesktop();
+        const tableNumber = Helper.getTableNumber();
+        if (tableNumber == null) {
+            this.options.push({ name: 'Produtos', icon: 'mdi-cart', path: '/produtos' });
+        }
     },
 
     data: () => ({
@@ -29,7 +33,6 @@ export default {
             { name: 'Home', icon: 'mdi-home', path: '/' },
             { name: 'Pedido', icon: 'mdi-pencil', path: '/pedido' },
             { name: 'Pedidos', icon: 'mdi-format-list-bulleted', path: '/pedidos' },
-            { name: 'Produtos', icon: 'mdi-cart', path: '/produtos' },
         ],
     }),
 
