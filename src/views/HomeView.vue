@@ -6,7 +6,7 @@
         </v-row>
         <v-row class="mt-6">
             <CardSubmit :properties="cardSubmit"></CardSubmit>
-            <FinishAttendanceButton></FinishAttendanceButton>
+            <FinishAttendanceButton v-if="!tableIsClosed"></FinishAttendanceButton>
         </v-row>
     </v-container>
 </template>
@@ -28,6 +28,8 @@ export default defineComponent({
 
     data: () => ({
         hasOrder: false,
+        tableIsClosed: false,
+        table: undefined,
         option: {
             title: 'Novo Pedido',
             path: '/pedido',
@@ -51,14 +53,26 @@ export default defineComponent({
                 } else {
                     this.tableId = table;
                 }
-                this.validateTable();
+                this.reloadTable();
+            },
+        },
+        table: {
+            immediate: true,
+            handler(table) {
+                if (!table) {
+                    return;
+                }
+                const status = table.status;
+                if (status) {
+                    this.tableIsClosed = status === 'closed';
+                }
             },
         },
     },
 
     methods: {
-        async validateTable() {
-            await TableService.getByNumber(this.tableId);
+        async reloadTable() {
+            this.table = await TableService.getByNumber(this.tableId);
         },
 
         hasOpenedOrder() {

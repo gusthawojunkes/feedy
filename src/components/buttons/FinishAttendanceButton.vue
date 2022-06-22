@@ -1,5 +1,5 @@
 <template>
-    <v-btn class="py-12" @click="finishAttendanceDialog = true" block max-width="500"> Finalizar atendimento </v-btn>
+    <v-btn :disabled="disabled" class="py-12" @click="finishAttendanceDialog = true" block max-width="500"> Finalizar atendimento </v-btn>
     <v-dialog v-model="finishAttendanceDialog">
         <v-card class="pa-4">
             <v-card-title class="text-center"> Deseja realmente finalizar seu atendimento? </v-card-title>
@@ -23,6 +23,7 @@ export default defineComponent({
 
     data: () => ({
         finishAttendanceDialog: false,
+        disabled: false,
         confirmDialogProps: {
             dialog: false,
             title: 'Atendimento finalizado com sucesso!',
@@ -40,6 +41,7 @@ export default defineComponent({
             TableService.closeTable(tableNumber)
                 .then(() => {
                     this.confirmDialogProps.dialog = true;
+                    this.disabled = true;
                 })
                 .catch(() => {
                     this.$toast.error('Erro ao finalizar atendimento, contate os reponsáveis do estabelecimento.');

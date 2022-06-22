@@ -11,16 +11,19 @@ export default class TableService {
             throw 'Número da mesa não informado';
         }
         const table = await Firestore.findDocument('tables', number.toString());
-        if (table && table.closingDate == null) {
+        if (table) {
             return table;
         }
 
-        return Firestore.save('tables', this.newTable(number)).then((table) => {
-            return table;
-        });
+        return await this.saveNewTable(number);
     }
 
-    static newTable(number) {
+    static async saveNewTable(number) {
+        const table = this.createNewTableInstance(number);
+        return await Firestore.save('tables', table);
+    }
+
+    static createNewTableInstance(number) {
         return {
             uid: number.toString(),
             createdAt: new Date(),
