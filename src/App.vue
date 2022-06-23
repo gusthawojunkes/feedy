@@ -22,7 +22,7 @@ export default {
     mounted() {
         this.isDesktop = Helper.isDesktop();
         const tableNumber = Helper.getTableNumber();
-        if (tableNumber == null) {
+        if (tableNumber === null) {
             this.options.push({ name: 'Produtos', icon: 'mdi-cart', path: '/produtos' });
         }
     },

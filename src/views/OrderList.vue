@@ -39,7 +39,7 @@ export default defineComponent({
     methods: {
         async updateOrders() {
             const tableNumber = Helper.getTableNumber();
-            if (tableNumber != null) {
+            if (tableNumber !== null) {
                 this.orders = await OrderService.getAllByTable(tableNumber);
                 _.sortBy(this.orders, 'createdAt').reverse();
             }

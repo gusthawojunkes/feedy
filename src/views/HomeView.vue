@@ -46,7 +46,7 @@ export default defineComponent({
             immediate: true,
             handler(to) {
                 const table = Helper.getTableNumber();
-                if (table == null && to.redirectedFrom) {
+                if (table === null && to.redirectedFrom) {
                     const { id } = to.redirectedFrom.params;
                     sessionStorage.setItem('table', id);
                     this.tableId = id;
