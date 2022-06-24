@@ -5,11 +5,11 @@ import _ from 'lodash';
 
 export default class OrderService {
     static async getAll() {
-        return await Firestore.getAll('orders');
+        return Firestore.getAll('orders');
     }
 
     static async save(order) {
-        return await Firestore.save('orders', order);
+        return Firestore.save('orders', order);
     }
 
     static createNewOrder() {
@@ -61,7 +61,7 @@ export default class OrderService {
     }
 
     static async getAllByTable(number) {
-        return await Firestore.doQuery('orders', {
+        return Firestore.doQuery('orders', {
             field: 'tableNumber',
             operator: '==',
             value: number,

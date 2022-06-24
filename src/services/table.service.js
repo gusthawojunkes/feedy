@@ -15,12 +15,12 @@ export default class TableService {
             return table;
         }
 
-        return await this.saveNewTable(number);
+        return this.saveNewTable(number);
     }
 
     static async saveNewTable(number) {
         const table = this.createNewTableInstance(number);
-        return await Firestore.save('tables', table);
+        return Firestore.save('tables', table);
     }
 
     static createNewTableInstance(number) {
@@ -29,7 +29,7 @@ export default class TableService {
             createdAt: new Date(),
             updatedAt: new Date(),
             name: `Mesa ${number}`,
-            number: number,
+            number,
             openingDate: new Date(),
             closingDate: null,
             status: 'open',

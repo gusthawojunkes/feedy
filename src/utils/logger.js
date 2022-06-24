@@ -28,8 +28,8 @@ export default class Logger {
     static generateLogDocument(message, type) {
         return {
             uid: Helper.generateUid(),
-            message: message,
-            type: type,
+            message,
+            type,
             date: new Date(),
         };
     }
