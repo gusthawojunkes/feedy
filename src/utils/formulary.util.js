@@ -1,5 +1,5 @@
 export default class FormularyUtils {
     static validateIsNotNull(errorMessage) {
-        return (value) => !!value || errorMessage;
+        return (value) => Boolean(value) || errorMessage;
     }
 }
