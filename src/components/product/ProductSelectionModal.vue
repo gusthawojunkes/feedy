@@ -1,14 +1,14 @@
 <template>
     <v-dialog v-model="productSelection.dialog">
-        <v-card :width="isDesktop ? 500 : 210">
+        <v-card :width="isDesktop ? 500 : '100%'">
             <v-toolbar color="#009688" dark prominent>
-                <v-toolbar-title>{{ productSelection.item.product.name }}</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-btn icon @click="close()">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
             </v-toolbar>
-            <v-card-text class="mt-8">
+            <v-card-title class="text-h5 text--primary mt-3"> {{ productSelection.item.product.name }} </v-card-title>
+            <v-card-text class="mt-8 mb-4">
                 {{ productSelection.item.product.description }}
             </v-card-text>
             <v-card-actions class="mx-2 mb-1">
