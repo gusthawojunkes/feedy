@@ -142,9 +142,7 @@ export default defineComponent({
         sendOrder() {
             this.saveOrder()
                 .then(() => {
-                    this.deleteCurrentOrder();
                     this.$router.push('/pedidos');
-                    // open modal...
                 })
                 .catch((error) => {
                     this.$toast.error(error.message);
