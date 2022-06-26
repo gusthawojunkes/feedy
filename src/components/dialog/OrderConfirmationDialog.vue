@@ -1,6 +1,6 @@
 <template>
     <v-dialog v-model="orderConfirmationDialog">
-        <v-card class="pa-8">
+        <v-card :class="isDesktop ? 'ml-14 pa-8' : 'pa-8'">
             <v-card-title class="text-h5 text-center my-8"> Deseja confirmar as informações do Pedido? </v-card-title>
             <div class="d-flex">
                 <v-card-text>
@@ -30,9 +30,14 @@
 
 <script>
 import { defineComponent } from 'vue';
+import Helper from '@/utils/helper';
 
 export default defineComponent({
     name: 'OrderConfirmationDialog',
+
+    mounted() {
+        this.isDesktop = Helper.isDesktop();
+    },
 
     props: {
         orderConfirmationDialog: {
@@ -66,5 +71,9 @@ export default defineComponent({
             this.close();
         },
     },
+
+    data: () => ({
+        isDesktop: false,
+    }),
 });
 </script>
