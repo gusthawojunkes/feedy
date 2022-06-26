@@ -60,7 +60,6 @@ export default defineComponent({
     },
 
     data: () => ({
-        productIndex: undefined,
         order: undefined,
         products: [],
         filteredProducts: [],
@@ -86,11 +85,7 @@ export default defineComponent({
 
     methods: {
         addItemOnOder(item) {
-            if (this.productIndex !== -1) {
-                this.order.items[this.productIndex].quantity = item.quantity;
-            } else {
-                this.order.items.push(item);
-            }
+            this.order.items.push(item);
             this.$toast.success(`${item.product.name} adicionado ao pedido!`);
         },
         openProductSelection(product) {
@@ -99,11 +94,11 @@ export default defineComponent({
                 return;
             }
             const { uid } = product;
-            this.productIndex = _.findIndex(this.order.items, (item) => {
+            const productIndex = _.findIndex(this.order.items, (item) => {
                 return item.product.uid === uid;
             });
-            if (this.productIndex !== -1) {
-                const item = this.order.items[this.productIndex];
+            if (productIndex !== -1) {
+                const item = this.order.items[productIndex];
                 this.selectionProductDialog.item = item;
             } else {
                 this.selectionProductDialog.item = {
@@ -142,6 +137,7 @@ export default defineComponent({
         sendOrder() {
             this.saveOrder()
                 .then(() => {
+                    this.deleteCurrentOrder();
                     this.$router.push('/pedidos');
                 })
                 .catch((error) => {

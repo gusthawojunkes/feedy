@@ -31,6 +31,7 @@
 <script>
 import { defineComponent } from 'vue';
 import Helper from '@/utils/helper';
+import OrderService from '@/services/order.service';
 
 export default defineComponent({
     name: 'OrderConfirmationDialog',
@@ -56,9 +57,8 @@ export default defineComponent({
         },
 
         calculateTotalAmount() {
-            return this.order.items.reduce((sum, item) => {
-                return sum + item.product.price * item.quantity;
-            }, 0);
+            const order = OrderService.calculateTotalAmount(order);
+            return order.totalAmount;
         },
 
         close() {
