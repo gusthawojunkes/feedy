@@ -28,7 +28,12 @@
             </v-card>
         </v-list>
         <v-btn class="my-12" color="#009688" block @click="openOrderRevision()"> Confirmar Pedido </v-btn>
-        <OrderConfirmationDialog :dialog="orderConfirmationDialog" @close="orderConfirmationDialog = false" @on-confirm="sendOrder()"></OrderConfirmationDialog>
+        <OrderConfirmationDialog
+            :order="order"
+            :orderConfirmationDialog="orderConfirmationDialog"
+            @close="orderConfirmationDialog = false"
+            @on-confirm="sendOrder()"
+        ></OrderConfirmationDialog>
     </div>
 </template>
 <script>
@@ -55,6 +60,7 @@ export default defineComponent({
     },
 
     data: () => ({
+        productIndex: undefined,
         order: undefined,
         products: [],
         filteredProducts: [],
@@ -80,7 +86,11 @@ export default defineComponent({
 
     methods: {
         addItemOnOder(item) {
-            this.order.items.push(item);
+            if (this.productIndex !== -1) {
+                this.order.items[this.productIndex].quantity = item.quantity;
+            } else {
+                this.order.items.push(item);
+            }
             this.$toast.success(`${item.product.name} adicionado ao pedido!`);
         },
         openProductSelection(product) {
@@ -89,11 +99,11 @@ export default defineComponent({
                 return;
             }
             const { uid } = product;
-            const productIndex = _.findIndex(this.order.items, (item) => {
+            this.productIndex = _.findIndex(this.order.items, (item) => {
                 return item.product.uid === uid;
             });
-            if (productIndex !== -1) {
-                const item = this.order.items[productIndex];
+            if (this.productIndex !== -1) {
+                const item = this.order.items[this.productIndex];
                 this.selectionProductDialog.item = item;
             } else {
                 this.selectionProductDialog.item = {
