@@ -30,7 +30,7 @@ export default class OrderService {
             this.validateAndSetTableNumber(order);
             this.calculateTotalAmount(order);
         } catch (error) {
-            throw 'Ocorreu um erro ao realizar as tratativas do pedido!';
+            throw `Ocorreu um erro ao realizar as tratativas do pedido!\n ${error}`;
         }
         return order;
     }
@@ -54,10 +54,25 @@ export default class OrderService {
                 order.tableNumber = tableNumberFromSession;
             }
         }
+        if (order.tableNumber === undefined || order.tableNumber === null) {
+            throw 'Não foi encontrada a mesa do pedido.';
+        }
     }
 
     static async send(order) {
-        console.log(order);
+        const service = this;
+        return new Promise((resolve, reject) => {
+            try {
+                const orderToSend = service.prepare(order);
+                if (orderToSend.totalAmount === 0) {
+                    reject('Pedido não pode estar com o valor zerado.');
+                }
+                orderToSend.status = 'EM ANDAMENTO';
+                service.updateOnRemote(orderToSend);
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     static async getAllByTable(number) {
@@ -65,6 +80,18 @@ export default class OrderService {
             field: 'tableNumber',
             operator: '==',
             value: number,
+        });
+    }
+
+    static async updateOnRemote(order) {
+        return new Promise((resolve, reject) => {
+            Firestore.update('orders', order.uid, order)
+                .then(() => {
+                    resolve(order);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
         });
     }
 }

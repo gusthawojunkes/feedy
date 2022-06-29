@@ -10,15 +10,15 @@
                             {{ item.product.name }}
                         </div>
                         <div class="d-flex justify-end mr-2">
-                            {{ item.product.price * item.quantity }}
+                            {{ toBrazilianCurrency(item.product.price * item.quantity) }}
                         </div>
                     </div>
                 </v-card-text>
             </div>
             <v-divider class="mt-4"></v-divider>
             <div class="d-flex justify-space-around my-4">
-                <v-card-text class="text-h6 text--primary mt-3 ml-2"> {{ getQuantity(order) }} </v-card-text>
-                <v-card-text class="text-h6 text--primary mt-3 mr-2 d-flex justify-end"> Total: {{ calculateTotalAmount() }} </v-card-text>
+                <v-card-text class="text-h6 text--primary mt-3 ml-2"> Itens: {{ getQuantity(order) }} </v-card-text>
+                <v-card-text class="text-h6 text--primary mt-3 mr-2 d-flex justify-end"> Total: {{ toBrazilianCurrency(order.totalAmount) }} </v-card-text>
             </div>
             <v-card-actions class="d-flex flex-column">
                 <v-btn @click="close()" block color="#009688"> Cancelar </v-btn>
@@ -31,7 +31,7 @@
 <script>
 import { defineComponent } from 'vue';
 import Helper from '@/utils/helper';
-import OrderService from '@/services/order.service';
+import StringUtils from '@/utils/string.util';
 
 export default defineComponent({
     name: 'OrderConfirmationDialog',
@@ -56,11 +56,6 @@ export default defineComponent({
             return order.items.reduce((acc, item) => acc + item.quantity, 0);
         },
 
-        calculateTotalAmount() {
-            const order = OrderService.calculateTotalAmount(order);
-            return order.totalAmount;
-        },
-
         close() {
             this.confirmationDialog = false;
             this.$emit('close');
@@ -69,6 +64,9 @@ export default defineComponent({
         confirm() {
             this.$emit('on-confirm');
             this.close();
+        },
+        toBrazilianCurrency(value) {
+            return StringUtils.convertIntoCurrency(value);
         },
     },
 

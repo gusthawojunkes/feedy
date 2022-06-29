@@ -85,7 +85,14 @@ export default defineComponent({
 
     methods: {
         addItemOnOder(item) {
-            this.order.items.push(item);
+            const productIndexOnOrder = _.findIndex(this.order.items, (currentItem) => {
+                return currentItem.product.uid === item.product.uid;
+            });
+            if (productIndexOnOrder !== -1) {
+                this.order.items[productIndexOnOrder] = item;
+            } else {
+                this.order.items.push(item);
+            }
             this.$toast.success(`${item.product.name} adicionado ao pedido!`);
         },
         openProductSelection(product) {
@@ -131,6 +138,7 @@ export default defineComponent({
                 this.$toast.error('Adicione ao menos um item no pedido antes de finalizar!');
                 return;
             }
+            OrderService.calculateTotalAmount(this.order);
             this.orderConfirmationDialog = true;
         },
 
@@ -138,6 +146,7 @@ export default defineComponent({
             this.saveOrder()
                 .then(() => {
                     this.deleteCurrentOrder();
+                    OrderService.send(this.order);
                     this.$router.push('/pedidos');
                 })
                 .catch((error) => {
