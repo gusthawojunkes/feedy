@@ -28,7 +28,12 @@
             </v-card>
         </v-list>
         <v-btn class="my-12" color="#009688" block @click="openOrderRevision()"> Confirmar Pedido </v-btn>
-        <OrderConfirmationDialog :dialog="orderConfirmationDialog" @close="orderConfirmationDialog = false" @on-confirm="sendOrder()"></OrderConfirmationDialog>
+        <OrderConfirmationDialog
+            :order="order"
+            :orderConfirmationDialog="orderConfirmationDialog"
+            @close="orderConfirmationDialog = false"
+            @on-confirm="sendOrder()"
+        ></OrderConfirmationDialog>
     </div>
 </template>
 <script>
@@ -134,7 +139,6 @@ export default defineComponent({
                 .then(() => {
                     this.deleteCurrentOrder();
                     this.$router.push('/pedidos');
-                    // open modal...
                 })
                 .catch((error) => {
                     this.$toast.error(error.message);
