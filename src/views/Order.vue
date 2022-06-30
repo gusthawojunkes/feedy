@@ -22,7 +22,12 @@
                     <v-btn class="mx-2" fab dark @click="openProductSelection(product)">
                         <v-icon dark>mdi-plus</v-icon>
                     </v-btn>
-                    <ProductSelectionModal :productSelection="selectionProductDialog" @close="selectionProductDialog.dialog = false" @on-add-item="addItemOnOder($event)">
+                    <ProductSelectionModal
+                        :productSelection="selectionProductDialog"
+                        @close="selectionProductDialog.dialog = false"
+                        @on-add-item="addItemOnOder($event)"
+                        @on-remove="removeOrderItem($event)"
+                    >
                     </ProductSelectionModal>
                 </div>
             </v-card>
@@ -84,6 +89,14 @@ export default defineComponent({
     },
 
     methods: {
+        removeOrderItem(uid) {
+            const productIndexOnOrder = _.findIndex(this.order.items, (currentItem) => {
+                return currentItem.product.uid === uid;
+            });
+            if (productIndexOnOrder !== -1) {
+                this.order.items.splice(productIndexOnOrder, 1);
+            }
+        },
         addItemOnOder(item) {
             const productIndexOnOrder = _.findIndex(this.order.items, (currentItem) => {
                 return currentItem.product.uid === item.product.uid;
@@ -128,9 +141,7 @@ export default defineComponent({
             this.validateOrderOrThrowException();
             const order = OrderService.prepare(this.order);
             sessionStorage.setItem('order', JSON.stringify(order));
-            OrderService.save(order).then(() => {
-                this.$toast.success('Pedido salvo com sucesso!');
-            });
+            await OrderService.save(order);
         },
 
         openOrderRevision() {
@@ -142,16 +153,21 @@ export default defineComponent({
             this.orderConfirmationDialog = true;
         },
 
-        sendOrder() {
-            this.saveOrder()
-                .then(() => {
-                    this.deleteCurrentOrder();
-                    OrderService.send(this.order);
-                    this.$router.push('/pedidos');
-                })
-                .catch((error) => {
-                    this.$toast.error(error.message);
-                });
+        async sendOrder() {
+            try {
+                await this.saveOrder();
+                await OrderService.send(this.order)
+                    .then(() => {
+                        this.deleteCurrentOrder();
+                        this.$router.push('/pedidos');
+                        this.$toast.success('Pedido enviado com sucesso!');
+                    })
+                    .catch((error) => {
+                        throw error;
+                    });
+            } catch (error) {
+                this.$toast.error(error.message);
+            }
         },
 
         loadOrder() {

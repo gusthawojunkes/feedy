@@ -65,6 +65,8 @@ export default defineComponent({
                     product: this.productSelection.item.product,
                     quantity: this.productSelection.item.quantity,
                 });
+            } else {
+                this.$emit('on-remove', this.productSelection.item.product.uid);
             }
             this.close();
         },

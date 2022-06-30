@@ -53,7 +53,11 @@ export default defineComponent({
 
     methods: {
         getQuantity(order) {
-            return order.items.reduce((acc, item) => acc + item.quantity, 0);
+            if (order.items) {
+                return order.items.reduce((acc, item) => acc + item.quantity, 0);
+            } else {
+                return 0;
+            }
         },
 
         close() {

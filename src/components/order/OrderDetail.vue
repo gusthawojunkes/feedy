@@ -3,8 +3,8 @@
         <v-card-title>
             <span class="headline">Pedido {{ number }} </span>
             <v-spacer></v-spacer>
-            <v-chip class="ma-2" :color="order.paid === true ? 'red' : 'green'" text-color="white">
-                {{ order.paid === true ? 'FECHADO' : 'ABERTO' }}
+            <v-chip class="ma-2" :color="getSituationStyle(order)" text-color="white">
+                {{ getSituationLabel(order) }}
             </v-chip>
         </v-card-title>
         <div class="d-flex">
@@ -17,8 +17,8 @@
                 </v-card-text>
             </v-col>
             <v-col class="d-flex flex-column justify-end align-end mr-4 my-3">
-                <div>{{ getQuantity(order) }}</div>
-                <div class="mt-4">{{ order.totalAmount ? order.totalAmount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 0 }}</div>
+                <div>Itens: {{ getQuantity(order) }}</div>
+                <div class="mt-4">Total: {{ order.totalAmount ? order.totalAmount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 0 }}</div>
             </v-col>
         </div>
     </v-card>
@@ -26,6 +26,7 @@
 
 <script>
 import { defineComponent } from 'vue';
+import OrderUtils from '@/utils/order.util';
 
 export default defineComponent({
     name: 'OrderDetail',
@@ -52,6 +53,12 @@ export default defineComponent({
             } else {
                 return 0;
             }
+        },
+        getSituationLabel(order) {
+            return OrderUtils.getSituationLabel(order);
+        },
+        getSituationStyle(order) {
+            return OrderUtils.getSituationStyle(order);
         },
     },
 });

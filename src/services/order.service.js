@@ -69,6 +69,7 @@ export default class OrderService {
                 }
                 orderToSend.status = 'EM ANDAMENTO';
                 service.updateOnRemote(orderToSend);
+                resolve();
             } catch (error) {
                 reject(error);
             }
