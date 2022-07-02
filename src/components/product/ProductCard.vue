@@ -8,16 +8,16 @@
         </v-card-title>
         <v-card-actions class="my-4">
             <v-spacer></v-spacer>
-            <v-btn icon @click="edit(product.uid)">
+            <v-btn icon @click="edit()">
                 <v-icon dark> mdi-pencil </v-icon>
             </v-btn>
+            <ProductRegisterModal :open="editProductDialog" :productData="product" @close="editProductDialog = false" @on-create="reloadProducts($event)"></ProductRegisterModal>
             <v-btn icon @click="remove(product.uid)"> <v-icon dark> mdi-delete </v-icon> </v-btn>
             <v-btn v-if="product.description" :icon="showDescription ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="showDescription = !showDescription"></v-btn>
         </v-card-actions>
         <v-expand-transition>
             <div v-show="showDescription">
                 <v-divider></v-divider>
-
                 <v-card-text>
                     {{ product.description }}
                 </v-card-text>
@@ -29,24 +29,35 @@
 <script>
 import StringUtils from '@/utils/string.util';
 import { defineComponent } from 'vue';
+import ProductRegisterModal from './ProductRegisterModal.vue';
+
 export default defineComponent({
     name: 'ProductCard',
     props: {
         product: { type: Object, default: () => {} },
     },
     data: () => ({
+        editProductDialog: false,
         showDescription: false,
     }),
     methods: {
         remove(uid) {
             this.$emit('remove', uid);
         },
-        edit(uid) {
-            this.$emit('edit', uid);
+        edit() {
+            this.editProductDialog = true;
         },
         toBrazilianCurrency(value) {
             return StringUtils.convertIntoCurrency(value);
         },
+        reloadProducts(newProduct) {
+            if (newProduct) {
+                this.editProductDialog = false;
+            }
+        },
+    },
+    components: {
+        ProductRegisterModal,
     },
 });
 </script>

@@ -2,7 +2,7 @@
     <v-dialog v-model="open">
         <v-card>
             <v-card-title>
-                <span>Cadastrar produto</span>
+                <span>Cadastro de produto</span>
                 <v-spacer></v-spacer>
                 <v-btn icon @click="close()">
                     <v-icon> mdi-close </v-icon>
@@ -12,15 +12,16 @@
                 <v-form v-model="valid" ref="productFormulary" lazy-validation>
                     <v-row>
                         <v-col cols="8">
-                            <v-text-field label="Nome" v-model="newProduct.name" required :rules="nameRules"></v-text-field>
+                            <v-text-field label="Nome" type="text" v-model="product.name" :rules="nameRules" required></v-text-field>
                         </v-col>
                         <v-col cols="4">
-                            <v-text-field label="Preço" type="number" v-model="newProduct.price" :rules="priceRules" required></v-text-field>
+                            <v-text-field label="Preço" type="number" v-model="product.price" :rules="priceRules" required></v-text-field>
                         </v-col>
                         <v-col cols="12">
                             <v-select
                                 label="Categoria"
-                                v-model="newProduct.categories"
+                                ref="categories"
+                                v-model="product.categories"
                                 :rules="categoryRules"
                                 :items="availableCategories"
                                 multiple
@@ -30,7 +31,7 @@
                             ></v-select>
                         </v-col>
                         <v-col>
-                            <v-textarea label="Descrição" rows="2" v-model="newProduct.description" :rules="descriptionRules" required></v-textarea>
+                            <v-textarea label="Descrição" type="text" rows="2" v-model="product.description" :rules="descriptionRules" required></v-textarea>
                         </v-col>
                     </v-row>
                 </v-form>
@@ -39,7 +40,7 @@
                 <v-spacer></v-spacer>
                 <v-btn @click="close()">Cancelar</v-btn>
                 <v-btn @click="reset()">Limpar</v-btn>
-                <v-btn @click="register()">Cadastrar</v-btn>
+                <v-btn @click="save()">Salvar</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -53,13 +54,14 @@ import Helper from '@/utils/helper';
 import FormularyUtils from '@/utils/formulary.util';
 
 export default defineComponent({
+    name: 'ProductRegisterModal',
     mounted() {
         this.availableCategories = CategorieService.defaults();
+        this.product = this.productData;
     },
-    name: 'ProductRegisterModal',
+
     data: () => ({
         valid: false,
-        newProduct: {},
         availableCategories: [],
         nameRules: [FormularyUtils.validateIsNotNull('Nome é obrigatório')],
         priceRules: [FormularyUtils.validateIsNotNull('Preço é obrigatório')],
@@ -68,31 +70,30 @@ export default defineComponent({
     }),
     props: {
         open: { type: Boolean, default: false },
+        productData: { type: Object, default: () => ({}) },
     },
     methods: {
         close() {
             this.$emit('close');
         },
-        register() {
+        save() {
             const formsValidation = this.$refs.productFormulary.validate();
             formsValidation.then((validation) => {
                 const isValid = validation.valid;
                 if (isValid) {
-                    this.newProduct.uid = Helper.generateUid();
-                    this.newProduct.createdAt = new Date();
-                    this.newProduct.updatedAt = new Date();
+                    this.generateInitialData();
+                    this.product.updatedAt = new Date();
 
-                    ProductService.save(this.newProduct)
+                    ProductService.save(this.product)
                         .then(() => {
-                            this.$emit('on-create', this.newProduct);
-                            this.newProduct = {};
-                            this.$toast.success(`Produto Criado com Sucesso!`);
+                            this.$emit('on-create', this.product);
+                            this.$toast.success(`Produto Salvo com Sucesso!`);
                         })
                         .catch((error) => {
                             if (error && error.massage) {
                                 console.error(error.massage);
                             }
-                            this.$toast.error(`Erro ao criar o produto!`);
+                            this.$toast.error(`Erro ao salvar o produto!`);
                         });
                 } else {
                     this.$toast.warning(`Existem inconsistências! Verifique o formulário!`);
@@ -101,10 +102,17 @@ export default defineComponent({
         },
         reset() {
             this.$refs.productFormulary.reset();
-            this.newProduct.categories = [];
+            this.product.categories = [];
             this.$nextTick(() => {
                 this.$refs.productFormulary.resetValidation();
             });
+        },
+
+        generateInitialData() {
+            if (!this.product.uid) {
+                this.product.uid = Helper.generateUid();
+                this.product.createdAt = new Date();
+            }
         },
     },
 });
