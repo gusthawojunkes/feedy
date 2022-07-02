@@ -60,11 +60,18 @@ export default defineComponent({
             }
         },
         addItem() {
-            if (this.productSelection.item && this.productSelection.item.quantity !== 0) {
+            const item = this.productSelection.item;
+            if (item && item.quantity !== 0) {
+                item.product.actualQuantity = item.quantity;
+                item.product.selected = true;
                 this.$emit('on-add-item', {
-                    product: this.productSelection.item.product,
-                    quantity: this.productSelection.item.quantity,
+                    product: item.product,
+                    quantity: item.quantity,
                 });
+            } else if (item) {
+                item.product.actualQuantity = 0;
+                item.product.selected = false;
+                this.$emit('on-remove', item.product.uid);
             }
             this.close();
         },

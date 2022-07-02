@@ -41,7 +41,7 @@ export default defineComponent({
             const tableNumber = Helper.getTableNumber();
             if (tableNumber !== null) {
                 this.orders = await OrderService.getAllByTable(tableNumber);
-                _.sortBy(this.orders, 'createdAt').reverse();
+                this.orders = _.sortBy(this.orders, 'updatedAt', 'desc');
             }
         },
     },

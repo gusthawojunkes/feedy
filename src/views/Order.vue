@@ -11,18 +11,23 @@
         </div>
         <v-list v-else v-for="product in filteredProducts" :key="product.uid">
             <v-card class="mx-auto my-4 d-flex flex-no-wrap">
-                <v-img :src="product.image" height="180px" cover></v-img>
+                <v-img :src="product.image" height="180px"></v-img>
                 <v-col class="d-flex flex-column justify-center">
                     <v-card-title>{{ product.name }} </v-card-title>
                     <div>
-                        <v-card-subtitle> R$ {{ product.price }} </v-card-subtitle>
+                        <v-card-subtitle> R$ {{ product.price }} {{ product.selected ? `(${product.actualQuantity}x)` : '' }}</v-card-subtitle>
                     </div>
                 </v-col>
                 <div class="d-flex flex-column justify-center mr-4">
-                    <v-btn class="mx-2" fab dark @click="openProductSelection(product)">
-                        <v-icon dark>mdi-plus</v-icon>
+                    <v-btn class="mx-2" color="#009688" @click="openProductSelection(product)">
+                        <v-icon dark>{{ product.selected ? 'mdi-pencil' : 'mdi-plus' }}</v-icon>
                     </v-btn>
-                    <ProductSelectionModal :productSelection="selectionProductDialog" @close="selectionProductDialog.dialog = false" @on-add-item="addItemOnOder($event)">
+                    <ProductSelectionModal
+                        :productSelection="selectionProductDialog"
+                        @close="selectionProductDialog.dialog = false"
+                        @on-add-item="addItemOnOder($event)"
+                        @on-remove="removeOrderItem($event)"
+                    >
                     </ProductSelectionModal>
                 </div>
             </v-card>
@@ -49,14 +54,12 @@ export default defineComponent({
     name: 'OrderTyping',
     async mounted() {
         this.loadingProducts = true;
-        this.products = await ProductService.getAll();
-        this.loadingProducts = false;
-        this.filteredProducts = this.filterProductsByCategory();
-        this.categories = CategorieService.defaults();
-    },
-
-    created() {
         this.order = this.loadOrder();
+        this.products = await ProductService.getAll();
+        this.updateProductsMapping();
+        this.loadingProducts = false;
+        this.filteredProducts = this.filterProducts();
+        this.categories = CategorieService.defaults();
     },
 
     data: () => ({
@@ -78,14 +81,37 @@ export default defineComponent({
             immediate: true,
             handler(to) {
                 const category = this.categories[to];
-                this.filteredProducts = this.filterProductsByCategory(category);
+                this.filteredProducts = this.filterProducts(category);
+            },
+        },
+        $route: {
+            immediate: true,
+            handler() {
+                this.saveOrder();
             },
         },
     },
 
     methods: {
+        removeOrderItem(uid) {
+            const productIndexOnOrder = _.findIndex(this.order.items, (currentItem) => {
+                return currentItem.product.uid === uid;
+            });
+            if (productIndexOnOrder !== -1) {
+                this.order.items.splice(productIndexOnOrder, 1);
+            }
+            this.filterProducts();
+        },
         addItemOnOder(item) {
-            this.order.items.push(item);
+            const productIndexOnOrder = _.findIndex(this.order.items, (currentItem) => {
+                return currentItem.product.uid === item.product.uid;
+            });
+            if (productIndexOnOrder !== -1) {
+                this.order.items[productIndexOnOrder] = item;
+            } else {
+                this.order.items.push(item);
+            }
+            this.filterProducts();
             this.$toast.success(`${item.product.name} adicionado ao pedido!`);
         },
         openProductSelection(product) {
@@ -109,7 +135,7 @@ export default defineComponent({
             this.selectionProductDialog.dialog = true;
         },
 
-        filterProductsByCategory(category = 'Geral') {
+        filterProducts(category = 'Geral') {
             if (category == 'Geral') return this.products;
 
             return this.products.filter((product) => {
@@ -117,13 +143,12 @@ export default defineComponent({
             });
         },
 
-        async saveOrder() {
-            this.validateOrderOrThrowException();
+        async saveOrder(forceSave = false) {
             const order = OrderService.prepare(this.order);
             sessionStorage.setItem('order', JSON.stringify(order));
-            OrderService.save(order).then(() => {
-                this.$toast.success('Pedido salvo com sucesso!');
-            });
+            if (forceSave) {
+                await OrderService.save(order);
+            }
         },
 
         openOrderRevision() {
@@ -131,18 +156,26 @@ export default defineComponent({
                 this.$toast.error('Adicione ao menos um item no pedido antes de finalizar!');
                 return;
             }
+            OrderService.calculateTotalAmount(this.order);
             this.orderConfirmationDialog = true;
         },
 
-        sendOrder() {
-            this.saveOrder()
-                .then(() => {
-                    this.deleteCurrentOrder();
-                    this.$router.push('/pedidos');
-                })
-                .catch((error) => {
-                    this.$toast.error(error.message);
-                });
+        async sendOrder() {
+            try {
+                const forceSaveOnRemote = true;
+                await this.saveOrder(forceSaveOnRemote);
+                await OrderService.send(this.order)
+                    .then(() => {
+                        this.deleteCurrentOrder();
+                        this.$router.push('/pedidos');
+                        this.$toast.success('Pedido enviado com sucesso!');
+                    })
+                    .catch((error) => {
+                        throw error;
+                    });
+            } catch (error) {
+                this.$toast.error(error.message);
+            }
         },
 
         loadOrder() {
@@ -170,7 +203,26 @@ export default defineComponent({
             this.order = undefined;
             sessionStorage.removeItem('order');
         },
+
+        updateProductsMapping() {
+            if (this.order) {
+                (this.order.items || []).forEach((item) => {
+                    const uid = item.product.uid;
+                    const index = _.findIndex(this.products, (product) => {
+                        return product.uid === uid;
+                    });
+                    if (index != -1) {
+                        const product = this.products[index];
+                        if (product) {
+                            product.selected = true;
+                            product.actualQuantity = item.quantity;
+                        }
+                    }
+                });
+            }
+        },
     },
+
     components: {
         ProductSelectionModal,
         OrderConfirmationDialog,
