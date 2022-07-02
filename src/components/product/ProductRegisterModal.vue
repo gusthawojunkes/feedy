@@ -103,9 +103,6 @@ export default defineComponent({
         reset() {
             this.$refs.productFormulary.reset();
             this.product.categories = [];
-            this.$nextTick(() => {
-                this.$refs.productFormulary.resetValidation();
-            });
         },
 
         generateInitialData() {
