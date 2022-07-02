@@ -19,7 +19,7 @@
                     </div>
                 </v-col>
                 <div class="d-flex flex-column justify-center mr-4">
-                    <v-btn class="mx-2" fab dark @click="openProductSelection(product)">
+                    <v-btn class="mx-2" color="#009688" @click="openProductSelection(product)">
                         <v-icon dark>{{ product.selected ? 'mdi-pencil' : 'mdi-plus' }}</v-icon>
                     </v-btn>
                     <ProductSelectionModal
