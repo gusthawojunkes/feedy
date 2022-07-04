@@ -62,6 +62,7 @@ export default defineComponent({
                 if (!table) {
                     return;
                 }
+
                 const status = table.status;
                 if (status) {
                     this.tableIsClosed = status === 'closed';
