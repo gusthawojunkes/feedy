@@ -14,8 +14,8 @@
 
 <script>
 import { defineComponent } from 'vue';
-import TableService from '../../services/table.service';
-import Helper from '../../utils/helper';
+import TableService from '@/services/table.service';
+import Helper from '@/utils/helper';
 import ConfirmationDialog from '@/components/dialog/ConfirmationDialog.vue';
 
 export default defineComponent({

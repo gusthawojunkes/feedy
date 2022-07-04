@@ -49,6 +49,8 @@ import ProductService from '@/services/product.service';
 import OrderService from '@/services/order.service';
 import OrderConfirmationDialog from '@/components/dialog/OrderConfirmationDialog.vue';
 import _ from 'lodash';
+import Helper from '@/utils/helper';
+import TableService from '@/services/table.service';
 
 export default defineComponent({
     name: 'OrderTyping',
@@ -151,7 +153,19 @@ export default defineComponent({
             }
         },
 
-        openOrderRevision() {
+        async openOrderRevision() {
+            const tableNumber = Helper.getTableNumber();
+            if (!tableNumber) {
+                this.$toast.error('Não foi possível identificar a mesa, contate os responsáveis pelo restaurante.');
+                return;
+            }
+
+            const table = await TableService.getByNumber(tableNumber);
+            if (table.status !== 'open') {
+                this.$toast.error('A mesa está fechada, não é possível realizar um pedido. Contate os responsáveis pelo restaurante.');
+                return;
+            }
+
             if (this.order.items.length == 0) {
                 this.$toast.error('Adicione ao menos um item no pedido antes de finalizar!');
                 return;
