@@ -8,9 +8,6 @@
         </v-card-title>
         <v-card-actions class="my-4">
             <v-spacer></v-spacer>
-            <v-btn icon @click="edit(product.uid)">
-                <v-icon dark> mdi-pencil </v-icon>
-            </v-btn>
             <v-btn icon @click="remove(product.uid)"> <v-icon dark> mdi-delete </v-icon> </v-btn>
             <v-btn v-if="product.description" :icon="showDescription ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="showDescription = !showDescription"></v-btn>
         </v-card-actions>
@@ -40,9 +37,6 @@ export default defineComponent({
     methods: {
         remove(uid) {
             this.$emit('remove', uid);
-        },
-        edit(uid) {
-            this.$emit('edit', uid);
         },
         toBrazilianCurrency(value) {
             return StringUtils.convertIntoCurrency(value);

@@ -51,9 +51,6 @@ export default defineComponent({
                     this.$toast.error('Erro ao Excluir Produto');
                 });
         },
-        edit(uid) {
-            console.log(uid);
-        },
         create() {
             this.createProductDialog = true;
         },

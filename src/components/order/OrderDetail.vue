@@ -9,10 +9,10 @@
         </v-card-title>
         <div class="d-flex">
             <v-col>
-                <v-card-text>
+                <v-card-text style="padding: 0">
                     <div v-for="item in order.items" :key="item.uid" style="margin-bottom: 2px">
                         <v-badge color="green my-1" :content="item.quantity" inline></v-badge>
-                        {{ item.product.name }}
+                        <span>{{ item.product.name }}</span>
                     </div>
                 </v-card-text>
             </v-col>
