@@ -17,4 +17,7 @@ export default class ProductService {
     static save(data) {
         return Firestore.save('products', data);
     }
+    static update(data) {
+        return Firestore.update('products', data.uid, data);
+    }
 }

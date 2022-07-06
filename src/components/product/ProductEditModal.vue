@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="open" persistent>
+    <v-dialog v-model="open">
         <v-card>
             <v-card-title>
                 <span>Cadastro de produto</span>
@@ -9,19 +9,19 @@
                 </v-btn>
             </v-card-title>
             <v-card-text>
-                <v-form ref="form" lazy-validation>
+                <v-form v-model="valid" ref="productFormulary" lazy-validation>
                     <v-row>
                         <v-col cols="8">
-                            <v-text-field label="Nome" type="text" v-model="product.name" :rules="nameRules" required></v-text-field>
+                            <v-text-field label="Nome" type="text" v-model="productData.name" :rules="nameRules" required></v-text-field>
                         </v-col>
                         <v-col cols="4">
-                            <v-text-field label="Preço" type="number" v-model="product.price" :rules="priceRules" required></v-text-field>
+                            <v-text-field label="Preço" type="number" v-model="productData.price" :rules="priceRules" required></v-text-field>
                         </v-col>
                         <v-col cols="12">
                             <v-select
                                 label="Categoria"
                                 ref="categories"
-                                v-model="product.categories"
+                                v-model="productData.categories"
                                 :rules="categoryRules"
                                 :items="availableCategories"
                                 multiple
@@ -31,7 +31,7 @@
                             ></v-select>
                         </v-col>
                         <v-col>
-                            <v-textarea label="Descrição" rows="2" v-model="product.description" :rules="descriptionRules" required></v-textarea>
+                            <v-textarea label="Descrição" type="text" rows="2" v-model="productData.description" :rules="descriptionRules" required></v-textarea>
                         </v-col>
                     </v-row>
                 </v-form>
@@ -55,9 +55,8 @@ import FormularyUtils from '@/utils/formulary.util';
 
 export default defineComponent({
     name: 'ProductRegisterModal',
-    async mounted() {
+    created() {
         this.availableCategories = CategorieService.defaults();
-        this.product = this.productData;
     },
 
     data: () => ({
@@ -74,19 +73,21 @@ export default defineComponent({
     },
     methods: {
         close() {
+            console.log(this.productData);
             this.$emit('close');
         },
         save() {
-            const formsValidation = this.$refs.form.validate();
+            const formsValidation = this.$refs.productFormulary.validate();
             formsValidation.then((validation) => {
                 const isValid = validation.valid;
                 if (isValid) {
                     this.generateInitialData();
-                    this.product.updatedAt = new Date();
+                    // eslint-disable-next-line vue/no-mutating-props
+                    this.productData.updatedAt = new Date();
 
-                    ProductService.save(this.product)
+                    ProductService.update(this.productData)
                         .then(() => {
-                            this.$emit('on-create', this.product);
+                            this.$emit('on-create', this.productData);
                             this.$toast.success(`Produto Salvo com Sucesso!`);
                         })
                         .catch((error) => {
@@ -101,8 +102,7 @@ export default defineComponent({
             });
         },
         reset() {
-            this.product.price = '';
-            this.product.description = '';
+            this.$refs.productFormulary.reset();
             this.product.categories = [];
         },
 

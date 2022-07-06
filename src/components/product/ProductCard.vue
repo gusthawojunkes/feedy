@@ -8,10 +8,10 @@
         </v-card-title>
         <v-card-actions class="my-4">
             <v-spacer></v-spacer>
-            <v-btn icon @click="edit()">
+            <v-btn icon @click="edit(product.uid)">
                 <v-icon dark> mdi-pencil </v-icon>
             </v-btn>
-            <ProductRegisterModal :open="editProductDialog" :productData="product" @close="editProductDialog = false" @on-create="reloadProducts($event)"></ProductRegisterModal>
+            <!-- <ProductEditModal :open="editProductDialog" :productData="product" @close="editProductDialog = false" @on-create="reloadProducts($event)"></ProductEditModal> -->
             <v-btn icon @click="remove(product.uid)"> <v-icon dark> mdi-delete </v-icon> </v-btn>
             <v-btn v-if="product.description" :icon="showDescription ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="showDescription = !showDescription"></v-btn>
         </v-card-actions>
@@ -29,7 +29,7 @@
 <script>
 import StringUtils from '@/utils/string.util';
 import { defineComponent } from 'vue';
-import ProductRegisterModal from './ProductRegisterModal.vue';
+// import ProductEditModal from './ProductEditModal.vue';
 
 export default defineComponent({
     name: 'ProductCard',
@@ -44,8 +44,8 @@ export default defineComponent({
         remove(uid) {
             this.$emit('remove', uid);
         },
-        edit() {
-            this.editProductDialog = true;
+        edit(uid) {
+            this.$emit('edit', uid);
         },
         toBrazilianCurrency(value) {
             return StringUtils.convertIntoCurrency(value);
@@ -56,9 +56,9 @@ export default defineComponent({
             }
         },
     },
-    components: {
-        ProductRegisterModal,
-    },
+    // components: {
+    //     ProductEditModal,
+    // },
 });
 </script>
 

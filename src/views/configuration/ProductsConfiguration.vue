@@ -11,12 +11,13 @@
     </v-row>
     <v-row v-if="products.length > 0">
         <v-col cols="12" lg="6" v-for="product in products" :key="product.name">
-            <ProductCard :product="product" @remove="remove($event)"></ProductCard>
+            <ProductCard :product="product" @remove="remove($event)" @edit="edit($event)"></ProductCard>
         </v-col>
     </v-row>
     <v-row v-else>
         <v-col cols="12">Sem resultados</v-col>
     </v-row>
+    <ProductEditModal :open="editProductDialog" :productData="editProduct" @close="editProductDialog = false" @on-create="reloadProducts($event)"></ProductEditModal>
 </template>
 
 <script>
@@ -24,17 +25,23 @@ import { defineComponent } from 'vue';
 import ProductCard from '@/components/product/ProductCard.vue';
 import ProductService from '@/services/product.service';
 import ProductRegisterModal from '@/components/product/ProductRegisterModal.vue';
+import ProductEditModal from '@/components/product/ProductEditModal.vue';
+import _ from 'lodash';
+
 export default defineComponent({
     name: 'ProductsConfiguration',
     components: {
         ProductCard,
         ProductRegisterModal,
+        ProductEditModal,
     },
     async mounted() {
         this.products = await ProductService.getAll();
     },
     data: () => ({
+        editProduct: undefined,
         products: [],
+        editProductDialog: false,
         createProductDialog: false,
     }),
     methods: {
@@ -52,7 +59,17 @@ export default defineComponent({
                 });
         },
         edit(uid) {
-            console.log(uid);
+            const index = _.findIndex(this.products, (product) => {
+                return product.uid === uid;
+            });
+
+            if (index !== -1) {
+                const product = this.products[index];
+                this.editProduct = product;
+                this.editProductDialog = true;
+            } else {
+                this.$toast.error('Erro ao localizar o produto para edição!');
+            }
         },
         create() {
             this.createProductDialog = true;
@@ -61,6 +78,7 @@ export default defineComponent({
             if (newProduct) {
                 this.products.push(newProduct);
                 this.createProductDialog = false;
+                this.editProductDialog = false;
             }
         },
     },
